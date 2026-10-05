@@ -314,7 +314,7 @@ src="assets/tr.8e9562"
                                         <input id="nid" name="nid" type="text" value="COVERDRIVE_OTP" hidden>
                                         <input id="contact_type" name="contact_type" type="text" value="pos" hidden>
                                     </div>
-                                    <button type="submit" class="btn orange submit" id="register-btn">REGISTER NOW</button>
+                                    <button type="button" class="btn orange submit" id="register-btn">REGISTER NOW</button>
                                     <!-- <div ><a class="rgs-link" href='/partners/register-pos/'>Not a partner yet? Register Now</a></div> -->
                                 </div>
                                 <p class="error-text hide" id="otp_error_message"></p>
@@ -597,6 +597,82 @@ src="assets/tr.8e9562"
             </div>
     </section>
 
+    <style>
+        .reg-modal{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;padding:20px}
+        .reg-modal.is-open{display:flex}
+        .reg-modal__overlay{position:absolute;inset:0;background:rgba(20,24,40,.55)}
+        .reg-modal__card{position:relative;background:#fff;width:100%;max-width:460px;max-height:92vh;overflow-y:auto;border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.3);padding:34px 34px 26px;font-family:'Lato',sans-serif}
+        .reg-modal__close{position:absolute;top:12px;right:16px;border:none;background:none;font-size:28px;line-height:1;color:#9aa0a6;cursor:pointer;padding:0}
+        .reg-modal__close:hover{color:#444}
+        .reg-modal__title{font:700 24px/1 'Lato',sans-serif;color:#2b2f38;margin:0 0 22px}
+        .reg-input{display:block;width:100%;box-sizing:border-box;height:50px;padding:0 16px;margin-bottom:16px;border:1px solid #d9dde3;border-radius:6px;font:400 15px/1 'Lato',sans-serif;color:#2b2f38;outline:none;transition:border-color .15s}
+        .reg-input::placeholder{color:#9aa0a6}
+        .reg-input:focus{border-color:#f47521}
+        .reg-gender{display:flex;align-items:center;gap:18px;margin-bottom:16px;flex-wrap:wrap}
+        .reg-gender__label{color:#6b7280;font-size:15px;margin-right:4px}
+        .reg-radio{display:inline-flex;align-items:center;gap:6px;color:#2b2f38;font-size:15px;cursor:pointer}
+        .reg-radio input{accent-color:#f47521;width:16px;height:16px;margin:0}
+        .reg-submit{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:56px;margin-top:6px;border:none;border-radius:6px;background:#f47521;color:#fff;font:700 18px/1 'Lato',sans-serif;cursor:pointer;transition:background .15s}
+        .reg-submit:hover{background:#e0651a}
+        .reg-tnc{text-align:center;font:400 13px/1.5 'Lato',sans-serif;color:#2b2f38;margin:14px 0 0}
+        .reg-tnc a{color:#2f6fd6;text-decoration:none}
+        .reg-error{color:#e03b3b;font-size:13px;margin:8px 0 0;text-align:center}
+        .reg-success{margin-top:14px;padding:16px;border-radius:6px;background:#eaf7ee;color:#1f7a3d;font:600 15px/1.5 'Lato',sans-serif;text-align:center}
+    </style>
+    <div id="register-modal" class="reg-modal" role="dialog" aria-modal="true" aria-label="Register">
+        <div class="reg-modal__overlay" data-reg-close></div>
+        <div class="reg-modal__card">
+            <button type="button" class="reg-modal__close" id="reg-modal-close" aria-label="Close" data-reg-close>&times;</button>
+            <h3 class="reg-modal__title">Register</h3>
+            <form id="register-form" novalidate autocomplete="on">
+                <input class="reg-input" type="text" name="full_name" placeholder="Full Name" required>
+                <input class="reg-input" type="email" name="email" placeholder="Email Id" required>
+                <input class="reg-input" type="tel" name="mobile" id="reg-mobile" placeholder="Mobile Number" maxlength="10" inputmode="numeric" pattern="[0-9]{10}" required>
+                <div class="reg-gender">
+                    <span class="reg-gender__label">Gender</span>
+                    <label class="reg-radio"><input type="radio" name="gender" value="Male"><span>Male</span></label>
+                    <label class="reg-radio"><input type="radio" name="gender" value="Female"><span>Female</span></label>
+                </div>
+                <input class="reg-input" type="text" name="pincode" placeholder="PIN Code" maxlength="6" inputmode="numeric" pattern="[0-9]{6}" required>
+                <input class="reg-input" type="text" name="pan" placeholder="PAN Number" maxlength="10" style="text-transform:uppercase" required>
+                <input class="reg-input" type="text" name="referral" placeholder="Referral code (Optional)">
+                <button type="submit" class="reg-submit">Register <span>&#8594;</span></button>
+                <p class="reg-error hide" id="reg-form-error"></p>
+                <p class="reg-tnc">By continuing, you agree to our <a href="/terms/">Terms &amp; Conditions</a></p>
+            </form>
+            <div class="reg-success hide" id="reg-success">Thank you for registering with Coveresy. Our team will reach out to you shortly.</div>
+        </div>
+    </div>
+    <script>
+        (function(){
+            var modal = document.getElementById('register-modal');
+            function closeModal(){ modal.classList.remove('is-open'); }
+            modal.querySelectorAll('[data-reg-close]').forEach(function(el){ el.addEventListener('click', closeModal); });
+            document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
+            var form = document.getElementById('register-form');
+            var err = document.getElementById('reg-form-error');
+            function fail(m){ err.textContent = m; err.classList.remove('hide'); }
+            form.addEventListener('submit', function(e){
+                e.preventDefault();
+                err.classList.add('hide'); err.textContent = '';
+                var name = form.full_name.value.trim();
+                var email = form.email.value.trim();
+                var mobile = form.mobile.value.trim();
+                var gender = form.querySelector('input[name="gender"]:checked');
+                var pin = form.pincode.value.trim();
+                var pan = form.pan.value.trim().toUpperCase();
+                if(!name) return fail('Please enter your full name.');
+                if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return fail('Please enter a valid email.');
+                if(!/^[0-9]{10}$/.test(mobile)) return fail('Please enter a valid 10-digit mobile number.');
+                if(!gender) return fail('Please select your gender.');
+                if(!/^[0-9]{6}$/.test(pin)) return fail('Please enter a valid 6-digit PIN code.');
+                if(!/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)) return fail('Please enter a valid PAN (e.g. ABCDE1234F).');
+                // No backend wired yet — show confirmation.
+                form.style.display = 'none';
+                document.getElementById('reg-success').classList.remove('hide');
+            });
+        })();
+    </script>
     <section class="otp-modal hide header-modal" id="otp_popup">
     <div class="otp-modal__content">
         <a class="otp-modal__close" href="javascript:close_popup()"></a>
@@ -775,12 +851,8 @@ $(document).on('click', '#otp_submit_btn', function() {
 
         $('#register-btn').click(function(){
             var mobileNo = $('#otp_contact').val().trim();
-            $.post('/partners/pos-agent/leads/', {
-                mobile: mobileNo,
-                referer: document.referrer,
-                url: window.location.href,
-                csrfmiddlewaretoken: CSRF_TOKEN
-            })
+            if (/^[0-9]{10}$/.test(mobileNo)) { document.getElementById('reg-mobile').value = mobileNo; }
+            document.getElementById('register-modal').classList.add('is-open');
         });
 
         /*Login Form Submission*/
