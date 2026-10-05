@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+
+<html>
+
+<head lang="en">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=9; IE=8; IE=7; IE=EDGE" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Coveresy - Login OTP</title>
+    <link rel="shortcut icon" href="assets/favicon.c6abebd19042.fe52a5.ico" type="image/x-icon" />
+    <!-- link href='https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css' -->
+    <link href='assets/css.1d997c.css' rel='stylesheet' type='text/css'>
+    <script src="assets/jquery-3.7.1.min.82e7bc5ab678.97b860.js"></script>
+    
+    <link href="assets/base_product_variables.a9f1ac119158.ffbe48.css" rel="stylesheet">
+    
+    
+    <!-- link href="https://assets.coverfox.com/static/account_manager/css/bootstrap.c70b47bbce70.css" rel="stylesheet" -->
+    <!-- link href="https://assets.coverfox.com/static/account_manager/css/login.225798603e3b.css" rel="stylesheet" -->
+    <link href="assets/account-manager-login.d450219d3d8e.d57137.css" rel="stylesheet">
+    <link href="assets/otp-popup.be075e090348.46fb96.css" rel="stylesheet">
+    
+    <!-- css root variables not defined for coveresy -->
+
+    <script type="text/javascript">
+        var MAX_OTP_RESEND = 3;
+        $(function () {
+            $("#id_contact").addClass("cf-input");
+            $("#id_contact").attr("placeholder", "Email or mobile");
+        });
+    </script>
+    
+    <!-- ANALYTICS_TRACKING_ENABLED True tool_webengage -->
+    <!-- Google Tag Manager template-->
+    <!-- <script type="text/javascript">
+        typeof ready == "undefined" && (window.ready = function(fn) {
+            if (document.readyState != 'loading') {
+                fn();
+            } else if (document.addEventListener) {
+                document.addEventListener('DOMContentLoaded', fn);
+            } else {
+                document.attachEvent('onreadystatechange', function() {
+                if (document.readyState != 'loading')
+                    fn();
+                });
+            }
+        });
+        setTimeout(function() {
+        window.ready(function(){
+            var _gscq = [];
+            (function (w, d, s, l, i) {
+            w[l] = w[l] || []; w[l].push({
+            'gtm.start':
+            new Date().getTime(), event: 'gtm.js'
+            }); var f = d.getElementsByTagName(s)[0],
+            j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+            'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+            })(window, document, 'script', 'dataLayer', 'GTM-NKRTCJ7');
+        });
+        }, 100);
+    </script> -->
+
+<script type="text/javascript">
+    var IS_CF = "coveresy" === 'coverfox' || "coveresy" === 'webapp'
+    document.addEventListener('DOMContentLoaded', () => {
+        // delay only for CF for SEO improvement
+        setTimeout(initGTM, IS_CF ? 3500 : 0);
+    });
+    var _gscq = [];
+    document.addEventListener('scroll', initGTMOnEvent);
+    document.addEventListener('mousemove', initGTMOnEvent);
+    document.addEventListener('touchstart', initGTMOnEvent);
+
+    function initGTMOnEvent (event) {
+        initGTM();
+        event.currentTarget.removeEventListener(event.type, initGTMOnEvent); // remove the event listener that got triggered
+    }
+
+    function initGTM () {
+        if (window.gtmDidInit) {
+            return false;
+        }
+
+        window.gtmDidInit = true; // flag to ensure script does not get added to DOM more than once.
+        const script = document.createElement('script');
+        script.type = 'text/javascript';
+        script.async = true;
+        script.onload = () => {
+            dataLayer.push({
+                event: 'gtm.js', 'gtm.start': (new Date()).getTime(), 'gtm.uniqueEventId': 0
+            });
+        } // this part ensures PageViews is always tracked
+        script.src = 'https://www.googletagmanager.com/gtm.js?id='+'GTM-NKRTCJ7';
+        document.head.appendChild(script);
+        // Global site tag (gtag.js) - Google Analytics
+        
+            const script2 = document.createElement('script');
+            script2.type = 'text/javascript';
+            script2.async = true;
+            script2.onload = () => {
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', 'UA-236899531-1');
+            }
+            script2.src = "https://www.googletagmanager.com/gtag/js?id=UA-236899531-1";
+            document.head.appendChild(script2);
+        
+
+    }
+</script>
+
+    <!-- migrate clevertap & webengage to gtm, bring common functions here
+        https://docs.webengage.com/docs/gtm
+        https://developer.clevertap.com/docs/google-tag-manager
+    -->
+    
+        <!-- Webengage push -->
+
+<script id='_webengage_script_tag'>
+
+    var WEBENGAGE_DELAY_TIME = 4000;
+
+    var webengageCounter = 0;
+    window['webengage'] = {};
+    var delayedEventsList = [];
+
+    function getHostName(url) {
+        var match = url.match(/:\/\/(www[0-9]?\.)?(.[^/:]+)/i);
+        if (match != null && match.length > 2 && typeof match[2] === 'string' && match[2].length > 0) {
+            return match[2];
+        }
+        else {
+            return null;
+        }
+    }
+    var domainstr = getHostName(window.location.href);
+    var finalArr = domainstr.split(".");
+    let webngkey = finalArr[0] === 'pos' ? "~47b65736" : "82617c25"
+    localStorage.setItem('domain_url', finalArr[0]);
+
+    // {name: "event_name", data:{}}
+    function trackEngageEvent(name, data) {
+        if (window['webengage'] && window['webengage']['track'] && typeof window['webengage']['track'] === 'function') {
+            if (localStorage.getItem('isTraccarMode')) {
+                if (!data) { data = {}}
+                data.source = 'fos_app'
+            }
+            window['webengage']['track'](name, data);
+        } else {
+            delayedEventsList.push({ name: name, data: data });
+        }
+        // for GA Events
+        window['dataLayer'] && window['dataLayer'].push({ name: name, data: data, event: 'custom_event_name' });
+    }
+    window['trackEngageEvent'] = trackEngageEvent;
+
+    function loginEngageUser(user_id) {
+        if (window['webengage'] && window['webengage']['user'] && typeof window['webengage']['user']['login'] === 'function') {
+            window['webengage']['user']['login']('+91' + user_id);
+        } else {
+            delayedEventsList.push({ ev: 'login_user_we', data: '+91' + user_id });
+        }
+    }
+    window['loginEngageUser'] = loginEngageUser;
+
+    function setEngageUserAttributes(name, value) {
+        if (window['webengage'] && window['webengage']['user'] && typeof window['webengage']['user']['setAttribute'] === 'function') {
+            window['webengage']['user']['setAttribute'](name, value);
+        } else {
+            delayedEventsList.push({ ev: 'user_sa', name: name, data: value });
+        }
+    }
+    window['setEngageUserAttributes'] = setEngageUserAttributes;
+
+    function triggerDelayedEvents() {
+        if (window['webengage'] && window['webengage']['user']) {
+            delayedEventsList.forEach(event => {
+                if(event.ev === 'login_user_we') {
+                    window['webengage']['user']['login'](event.data);
+                } else if(event.ev === 'user_sa') {
+                    window['webengage']['user']['setAttribute'](event.name, event.value);
+                } else {
+                    window['webengage']['track'](event.name, event.data);
+                }
+            });
+            delayedEventsList = [];
+        } else {
+            setTimeout(() => {
+                webengageCounter <= 5 && triggerDelayedEvents();
+            }, 500);
+        }
+    }
+
+    setTimeout(() => {
+        !function (w, e, b, n, g) {
+            function o(e, t) {
+                e[t[t.length - 1]] = function () {
+                    r.__queue.push([t.join("."),
+                        arguments])
+                }
+            } var i, s, r = w[b], z = " ", l = "init options track screen onReady".split(z), a = "feedback survey notification".split(z), c = "options render clear abort".split(z), p = "Open Close Submit Complete View Click".split(z), u = "identify login logout setAttribute".split(z); if (!r || !r.__v) { for (w[b] = r = { __queue: [], __v: "6.0", user: {} }, i = 0; i < l.length; i++)o(r, [l[i]]); for (i = 0; i < a.length; i++) { for (r[a[i]] = {}, s = 0; s < c.length; s++)o(r[a[i]], [a[i], c[s]]); for (s = 0; s < p.length; s++)o(r[a[i]], [a[i], "on" + p[s]]) } for (i = 0; i < u.length; i++)o(r.user, ["user", u[i]]); setTimeout(function () { var f = e.createElement("script"), d = e.getElementById("_webengage_script_tag"); f.type = "text/javascript", f.async = !0, f.src = ("https:" == e.location.protocol ? "https://ssl.widgets.webengage.com" : "http://cdn.widgets.webengage.com") + "/js/webengage-min-v-6.0.js", d.parentNode.insertBefore(f, d) }) }
+        }(window, document, "webengage");
+        webengage.init(webngkey);
+        triggerDelayedEvents();
+    }, WEBENGAGE_DELAY_TIME);
+
+</script>
+
+
+    
+    
+        <!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1039531455263230');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="assets/tr.8e9562"
+/></noscript>
+<!-- End Meta Pixel Code -->
+
+    
+
+
+
+    <!-- Google Tag Manager (script) (POS)-->
+    <script>
+        (function (w, d, s, l, i) {
+            w[l] = w[l] || []; w[l].push({
+                'gtm.start':
+                    new Date().getTime(), event: 'gtm.js'
+            }); var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-NKRTCJ7');
+    </script>
+    <!-- End Google Tag Manager (script) -->
+</head>
+
+<body>
+    <!-- <form method="POST">
+<input type="hidden" name="csrfmiddlewaretoken" value="9YyOuSoo262Dn92ZW3S2qDbZEjHm3aPJtjfKCVbWvdokPjZvsVfIqRyYF4ibdZ18">
+<li><label for="id_contact">Contact:</label> <input type="text" name="contact" id="id_contact"></li>
+<input type="hidden" value="" name="next">
+<button type="submit">submit</button>
+</form> -->
+<section>
+
+            <!-- <form action="" method="POST" id="otp_contact_form">
+                <div class="login">
+                    <h3>Let's get started</h3>
+                    <div class="otp-text">Please enter your mobile number. We will send an OTP on this number to let you start selling.</div>
+                    <input type="hidden" name="csrfmiddlewaretoken" value="9YyOuSoo262Dn92ZW3S2qDbZEjHm3aPJtjfKCVbWvdokPjZvsVfIqRyYF4ibdZ18">
+                    <label for="id_contact">Mobile</label>
+                    <div class="in-field">
+                        <input id="otp_contact" name="contact" type="text" class="cf-input" placeholder="Enter your 10 digit mobile number" maxlength="10">
+                        <input id="nid" name="nid" type="text" value="COVERDRIVE_OTP" hidden>
+                        <input id="contact_type" name="contact_type" type="text" value="pos" hidden>
+                    </div>
+                    <p class="error-text hide" id="otp_error_message"></p>
+                    <button type="submit" class="btn orange submit">Send OTP</button>
+                    <div ><a class="rgs-link" href='/partners/register-pos/'>Not a partner yet? Register Now</a></div>
+                </div>
+            </form> -->
+            <div class="pos-register-container pos-landing-container" data-cms-attr="class:containerClass">
+                <div class="cd-header">
+                    
+                        
+                        <img src="assets/logo_coveresy.e46b04b06dee.7a8794.svg" class="channel-logo">
+                        
+                    
+                    <div class="gplay-box">
+                        <a href="" target="_self" class="gplay-desktop">
+                        <img src="assets/google-play.98ebbbaa6904.d345e6.png">
+                        </a>
+                    <div id="login-headbtn" class="login-headbtn">LOG IN</div>
+                    </div>
+                </div>
+                <div class="container">
+                    <div class="cd-middle">
+                        <div class="cd-box">
+                            <div class="cd-box-title" data-cms-content="md:cdBoxTitle-cfox">Grow Your Insurance Business with Coveresy</div>
+                            <div class="cd-box-text" data-cms-content="md:cdBoxText-cfox">Manage Your Insurance Business<span>&nbsp;On The Go</span></div>
+                            
+                            <a href="" target="_self" class="gplay-mobile">
+                                <img src="assets/google-play.98ebbbaa6904.d345e6.png">
+                            </a>
+                            <div class="cd-content-mobile">
+                            <div class="cd-content">
+                                  <div class="cd-content-item">
+                                      <img data-cms-attr="src:cdContentImg1-cfox | alt:cdContentAlt1" src="assets/free.6526aa9d56a2.919a54.svg">
+                                      <div data-cms-content="md:cdContentItem1-cfox">One Platform for Your Insurance Business</div>
+                                  </div>
+                                  <div class="cd-content-item">
+                                    <img data-cms-attr="src:cdContentImg2-cfox | alt:cdContentAlt2" src="assets/zero_investment.ec428139935d.9e4eb5.svg">
+                                    <div data-cms-content="md:cdContentItem2-cfox">Simple. Digital. Partner-Enabled.</div>
+                                  </div>
+                            </div>
+                            <form action="" method="POST" id="otp_contact_form">
+                                <div class="login cd-form__field">
+                                    <input type="hidden" name="csrfmiddlewaretoken" value="9YyOuSoo262Dn92ZW3S2qDbZEjHm3aPJtjfKCVbWvdokPjZvsVfIqRyYF4ibdZ18">
+                                    <div class="in-field">
+                                        <input id="otp_contact" name="contact" type="text" class="cf-input" placeholder="Your mobile number" maxlength="10" inputmode="numeric" pattern="[0-9]*">
+                                        <input id="nid" name="nid" type="text" value="COVERDRIVE_OTP" hidden>
+                                        <input id="contact_type" name="contact_type" type="text" value="pos" hidden>
+                                    </div>
+                                    <button type="submit" class="btn orange submit" id="register-btn">REGISTER NOW</button>
+                                    <!-- <div ><a class="rgs-link" href='/partners/register-pos/'>Not a partner yet? Register Now</a></div> -->
+                                </div>
+                                <p class="error-text hide" id="otp_error_message"></p>
+                            </form>
+                            <!-- <div class="cd-form__field">
+
+                                <input id="cd_mobile_no1" maxlength="10" type="tel" placeholder="Your mobile number">
+                                <button id="cd-form-submit1" class="cd-form__button" data-cms-content="md:startNowBtn-cfox"><span>REGISTER NOW</span></button>
+                            </div> -->
+                            <div id="mobile_error1" class="cd-form__error">Please enter valid mobile number.</div>
+                            <div class="login-newbtn"><span class="nb-msg">Already registered?</span><span id="login-nbbtn" class="nb-btn">Log in</span></div>
+                            <div class="cd-tnc">By registering with Coveresy, you agree to be contacted regarding partner onboarding, platform updates and insurance-related services available through our authorised insurance partners.</div>
+                            <div class="cd-success-msg">
+                                Thank you for registering with us. We will get back to you to get started. Meanwhile, you can download our app from Playstore.
+                            </div>
+                            </div>
+
+                        </div>
+                        <div class="cd-screen">
+                            
+                                
+                                <img src="assets/coveresy_top_banner.9b705fd76644.8935c2.png">
+                                
+                            
+                        </div>
+                    </div>
+
+                </div>
+                <div class="cd-last">
+                    <div class="container">
+                        <div class="cd-footer">
+                        <div class="cd-item">
+                            <div class="cd-yb" data-cms-content="md:cdyb1-cfox">ONE</div>
+                            <div class="cd-item-text" data-cms-content="md:cdItemText1-cfox">Platform for customers, policies &amp; renewals</div>
+                        </div>
+                        <div class="cd-item">
+                            <div class="cd-yb" data-cms-content="md:cdyb1-cfox">3+</div>
+                            <div class="cd-item-text" data-cms-content="md:cdItemText2-cfox">Authorised Insurance Partners</div>
+                        </div>
+                        <div class="cd-item">
+                            <div class="cd-yb" data-cms-content="md:cdyb1-cfox">360°</div>
+                            <div class="cd-item-text" data-cms-content="md:cdItemText3-cfox">Partner &amp; Customer Support</div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="success-popup" id="success-popup">
+                    <div class="message-container">
+                        <div class="modal-close" id="success-modal-close"></div>
+                        <div class="header">Registered Successfully</div>
+                        <div class="sub-header">We will get back to you to get started.</div>
+                    </div>
+                </div>
+            </div>
+            <div class="container-section bg-grey pos-features-container pos-landing-container" data-cms-attr="class:containerClass">
+                <div class="container">
+                    <div class="pos-header-section" data-cms-attr="class:posSectionTitleClass" data-cms-content="md:posSectionTitle-cfox" >How it works<span class="feature-dash"></span></div>
+                    <div class="tick-section-container">
+                        <div class="tick-element">
+                            <div class="tick-box tick-after"><img src="assets/TICK.841819c87274.78418a.svg" data-cms-attr="src:tickImg1"/></div>
+                            <div class="tick-text-box">
+                                <div class="tick-title" data-cms-content="md:tickTitle1-cfox">Complete Online Registration</div>
+                                <div class="tick-text" data-cms-content="md:tickText1-cfox">Create your Coveresy partner profile</div>
+                            </div>
+                        </div>
+                        <div class="tick-element">
+                            <div class="tick-box tick-after"><img src="assets/TICK.841819c87274.78418a.svg" data-cms-attr="src:tickImg2"/></div>
+                            <div  class="tick-text-box">
+                                <div class="tick-title" data-cms-content="md:tickTitle2-cfox">Get Started with Coveresy</div>
+                                <div class="tick-text" data-cms-content="md:tickText2-cfox">Access our digital platform and partner support</div>
+                            </div>
+                        </div>
+                        <div class="tick-element">
+                            <div class="tick-box"><img src="assets/TICK.841819c87274.78418a.svg" data-cms-attr="src:tickImg3"/></div>
+                            <div  class="tick-text-box">
+                                <div class="tick-title" data-cms-content="md:tickTitle3-cfox">Serve Customers &amp; Grow Your Business</div>
+                                <div class="tick-text" data-cms-content="md:tickText3-cfox">Manage insurance journeys through authorised partners</div>
+                            </div>
+                        </div>
+                        <div class="feature-dash-mobile"></div>
+                    </div>
+                    <div id="join-btn" class="join-btn" data-cms-content="md:joinUsBtn-cfox">JOIN US</div>
+                </div>
+            </div>
+            <div class="container-section bg-grey pos-landing-container coverdrive-benefits" data-cms-attr="class:containerClass">
+                <div class="container">
+                    <div class="pos-header-section" data-cms-attr="class:posSectionTitleClass" data-cms-content="md:posSectionTitle-cfox">Benefits - <span>What You Get</span></div>
+                    <div class="tick-section-container">
+                        <div class="tick-element">
+                            <div class="tick-box"><img src="assets/sell_various.00424696ff67.d4d9c7.svg" data-cms-attr="src:tickImg1"/></div>
+                            <div class="tick-text-box">
+                                <div class="tick-title" data-cms-content="md:tickTitle1-cfox">Manage Customer Relationships</div>
+                                <div class="tick-text" data-cms-content="md:tickText1-cfox">Keep customer information organised and accessible in one place.</div>
+                            </div>
+                        </div>
+                        <div class="tick-element">
+                            <div class="tick-box"><img src="assets/multiple_instant.740c30a57582.09ea89.svg" data-cms-attr="src:tickImg1"/></div>
+                            <div class="tick-text-box">
+                                <div class="tick-title" data-cms-content="md:tickTitle1-cfox">Multiple Insurance Solutions</div>
+                                <div class="tick-text" data-cms-content="md:tickText1-cfox">Access health, life, motor and other insurance solutions through our authorised partners.</div>
+                            </div>
+                        </div>
+                        <div class="tick-element">
+                            <div class="tick-box"><img src="assets/online_doc.cd256e820bb2.84f005.svg" data-cms-attr="src:tickImg1"/></div>
+                            <div class="tick-text-box">
+                                <div class="tick-title" data-cms-content="md:tickTitle1-cfox">Digital Documentation</div>
+                                <div class="tick-text" data-cms-content="md:tickText1-cfox">Manage customer and policy documents digitally and securely.</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tick-section-container">
+                        <div class="tick-element">
+                            <div class="tick-box"><img src="assets/tracking_facility.66b60e1e3eef.e87077.svg" data-cms-attr="src:tickImg1"/></div>
+                            <div class="tick-text-box">
+                                <div class="tick-title" data-cms-content="md:tickTitle1-cfox">Policy &amp; Lead Tracking</div>
+                                <div class="tick-text" data-cms-content="md:tickText1-cfox">Track customer requests, policies, renewals and service activities on the go.</div>
+                            </div>
+                        </div>
+                        <div class="tick-element">
+                            <div class="tick-box"><img src="assets/online_pay.bfbe71d2a270.a6a492.svg" data-cms-attr="src:tickImg1"/></div>
+                            <div class="tick-text-box">
+                                <div class="tick-title" data-cms-content="md:tickTitle1-cfox">Policy Servicing Support</div>
+                                <div class="tick-text" data-cms-content="md:tickText1-cfox">Manage policy-related service requests through a simple digital workflow.</div>
+                            </div>
+                        </div>
+                        <div class="tick-element">
+                            <div class="tick-box"><img src="assets/manage_renewals.857c04742c2c.bf2068.svg" data-cms-attr="src:tickImg1"/></div>
+                            <div class="tick-text-box">
+                                <div class="tick-title" data-cms-content="md:tickTitle1-cfox">Manage Renewals</div>
+                                <div class="tick-text" data-cms-content="md:tickText1-cfox">Track upcoming renewals and stay connected with your customers.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <style>
+                .pos-partners-container .partners-subhead{font:600 18px/1.4 'Lato',sans-serif;color:#333;text-align:center;margin:-6px 0 18px}
+                .pos-partners-container .partners-intro{max-width:820px;margin:0 auto 34px;text-align:center;font:400 15px/1.7 'Lato',sans-serif;color:#555}
+                .pos-partners-container .partners-grid{display:flex;flex-wrap:wrap;justify-content:center;gap:24px;margin-bottom:30px}
+                .pos-partners-container .partner-card{flex:1 1 240px;max-width:300px;background:#fff;border:1px solid #e6e8eb;border-radius:12px;box-shadow:0 4px 18px rgba(0,0,0,.06);padding:30px 24px;text-align:center;transition:box-shadow .2s,transform .2s}
+                .pos-partners-container .partner-card:hover{box-shadow:0 8px 28px rgba(0,0,0,.12);transform:translateY(-3px)}
+                .pos-partners-container .partner-logo{height:72px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+                .pos-partners-container .partner-logo img{max-height:56px;max-width:190px;object-fit:contain}
+                .pos-partners-container .partner-wordmark{font:700 24px/1.15 'Lato',sans-serif;color:#1a3b5d;letter-spacing:.3px}
+                .pos-partners-container .partner-name{font:700 18px/1.3 'Lato',sans-serif;color:#222;margin-bottom:6px}
+                .pos-partners-container .partner-lic{font:400 13px/1.5 'Lato',sans-serif;color:#667}
+                .pos-partners-container .partners-disclosure{max-width:860px;margin:0 auto 20px;text-align:center;font:400 12px/1.7 'Lato',sans-serif;color:#8a9099}
+                .pos-partners-container .partners-trust{text-align:center;font:600 14px/1.5 'Lato',sans-serif;color:#1a3b5d}
+                @media(max-width:640px){.pos-partners-container .partner-card{flex:1 1 100%;max-width:360px}}
+            </style>
+            <div class="container-section bg-grey pos-partners-container pos-landing-container" data-cms-attr="class:containerClass">
+                <div class="container">
+                    <div class="pos-header-section" data-cms-attr="class:posSectionTitleClass" data-cms-content="md:posSectionTitle-cfox">Our Licensed Insurance Partners</div>
+                    <div class="partners-subhead">Access Insurance Solutions Through Our Trusted Partner Network</div>
+                    <p class="partners-intro">Coveresy works with licensed insurance broking partners to enable technology-driven insurance distribution and customer servicing. Through our partner network, eligible customers and partners can access insurance solutions across multiple categories.</p>
+                    <div class="partners-grid">
+                        <div class="partner-card">
+                            <div class="partner-logo"><img src="assets/partner_good_insurance.png" alt="Good Insurance"></div>
+                            <div class="partner-name">Good Insurance</div>
+                            <div class="partner-lic">Licensed Insurance Broker</div>
+                        </div>
+                        <div class="partner-card">
+                            <div class="partner-logo"><img src="assets/partner_coverfox.png" alt="Coverfox"></div>
+                            <div class="partner-name">Coverfox</div>
+                            <div class="partner-lic">IRDAI Licensed Direct Insurance Broker</div>
+                        </div>
+                        <div class="partner-card">
+                            <div class="partner-logo"><img src="assets/partner_arham_secure.png" alt="Arham Secure"></div>
+                            <div class="partner-name">Arham Secure</div>
+                            <div class="partner-lic">IRDAI Licensed Direct Insurance Broker</div>
+                        </div>
+                    </div>
+                    <p class="partners-disclosure">Insurance products are offered, distributed and issued through the respective licensed insurance partner and the underlying insurer, as applicable. Product availability, eligibility, pricing, coverage, terms and conditions are subject to the respective insurance partner and insurer.</p>
+                    <div class="partners-trust">Licensed Partners • Digital Platform • Wider Insurance Access</div>
+                </div>
+            </div>
+            <div class="container-section bg-white pos-certified-container pos-landing-container" data-cms-attr="class:containerClass">
+                <div class="container">
+                    <div class="pos-header-section" data-cms-attr="class:posSectionTitleClass" data-cms-content="md:posSectionTitle-cfox" >Grow with Coveresy</div>
+                    <div class="cert-box">
+                        <img class="cert-img" src="assets/get_certified.72b1a026fe41.95a427.svg" data-cms-attr="src:certImg"/>
+                        <div class="cert-text" data-cms-content="md:certText-cfox">
+                            Coveresy is an insurance technology and distribution enablement platform designed to help financial professionals and business partners manage customer relationships, policy workflows, renewals and insurance-related services through one digital platform.
+                            <br><br>
+                            Coveresy works with authorised insurance partners to facilitate access to insurance solutions and policy-related services. Product availability, eligibility, pricing, policy terms and issuance are subject to the respective insurer and authorised insurance distribution partner.
+                        </div>
+                    </div>
+                    <!-- <div class="reg-form">
+                        <div class="form-wrap">
+                            <div class="form-box">
+                                <div class="w--text_input">
+                                    <div class="w--text_input--label w--text_input--label-full" data-cms-content="md:yourName-cfox"><span>Your</span>&nbsp;name</div>
+                                    <input id="name-field" value="" maxlength="100">
+                                </div>
+                                <div class="w--text_input">
+                                    <div class="w--text_input--label w--text_input--label-full" data-cms-content="md:yourMobile-cfox"><span>Your</span>&nbsp;mobile number</div>
+                                    <input id="cd_mobile_no2" type="tel" tabindex="0" value="" maxlength="10">
+                                    <div id="mobile_error2" class="cd-form__error">Please enter valid mobile number.</div>
+                                </div>
+                                <div id="register-btn" class="reg-btn" data-cms-content="md:formBtnEdit-cfox">START NOW</div>
+                            </div>
+                            <div class="form-tnc">
+                                By registering with Coveresy, you agree to be contacted regarding partner onboarding, platform updates and insurance-related services available through our authorised insurance partners.
+                            </div>
+                            <div class="form-success-msg" data-cms-content="md:thankForRegister-cfox">
+                                Thank you for registering with us. We will get back to you to get started. Meanwhile, you can download our app from Playstore.
+                            </div>
+                        </div>
+
+                    </div> -->
+                </div>
+            </div>
+            <div class="container-section footer-wrapper footer-wrapper--small pos-lp-footer pos-landing-container" data-cms-attr="class:containerClass">
+                <div class="footer-title" data-cms-content="md:posFooterTitle-cfox">
+                    Get in touch
+                </div>
+                <div class="footer-subtext" data-cms-content="md:posFooterSubTitle-cfox">Want to know how Coveresy can help you grow your insurance business?</div>
+                <div class="footer-contact-box" data-cms-content="md:posFooterContBox-cfox">
+                    <div class="footer-contact-item">
+                        <div class="footer-contact-label">Partner Support</div>
+                        <div class="footer-contact-no">Connect with our Partner Support Team</div>
+                    </div>
+                </div>
+                <div class="footer-wrapper__finish">
+                    <div class="container-fluid">
+                    <style>
+                        .footer-company{text-align:center;max-width:720px;margin:0 auto 24px;padding-top:26px;border-top:1px solid rgba(255,255,255,.15)}
+                        .footer-company .fc-name{font:700 16px/1.4 'Lato',sans-serif;color:#fff;letter-spacing:.3px;margin-bottom:8px}
+                        .footer-company .fc-addr{font:400 13.5px/1.7 'Lato',sans-serif;color:rgba(255,255,255,.7);margin-bottom:12px}
+                        .footer-company .fc-meta{font:400 13.5px/1.7 'Lato',sans-serif;color:rgba(255,255,255,.7)}
+                        .footer-company .fc-meta b{color:#fff;font-weight:600}
+                    </style>
+                    <div class="footer-company">
+                        <div class="fc-name">COVERESY INSURTECH PRIVATE LIMITED</div>
+                        <div class="fc-addr">Unit No. 212, Plot No. H-3, Netaji Subhash Place (NSP),<br>Pitampura, North West Delhi, Delhi – 110034, India</div>
+                        <div class="fc-meta"><b>Headquarters:</b> Bengaluru, Karnataka, India</div>
+                        <div class="fc-meta"><b>CIN:</b> U66190DC2026PTC468775</div>
+                    </div>
+                    <div class="license-container">
+                    <p class="small-font">
+                        Insurance products, pricing, eligibility, policy terms, coverage and issuance are subject to the respective insurer and authorised insurance distribution partner.
+                    </p>
+                    <p class="small-font">
+                        <a href="/about/"><span class="color-w">About Us</span></a> &nbsp;·&nbsp;
+                        <a href="/partner/"><span class="color-w">Partner With Us</span></a> &nbsp;·&nbsp;
+                        <a href="/contact/"><span class="color-w">Contact Us</span></a> &nbsp;·&nbsp;
+                        <a href="/privacy/"><span class="color-w">Privacy Policy</span></a> &nbsp;·&nbsp;
+                        <a href="/terms/"><span class="color-w">Terms &amp; Conditions</span></a> &nbsp;·&nbsp;
+                        <a href="/disclaimer/"><span class="color-w">Disclaimer</span></a> &nbsp;·&nbsp;
+                        <a href="/grievance/"><span class="color-w">Grievance Redressal</span></a>
+                    </p>
+                    </div>
+
+                    <span class="copyright">
+                    <span>Copyright © 2026 Coveresy. All Rights Reserved</span>
+                    </span>
+                    </div>
+                </div>
+                <img class="pos-get-touch" src="assets/get_in_touch.a9b47a20e29a.0f3874.svg" />
+            </div>
+            <div id="login-modal" class="otp-modal hide header-modal">
+                <div class="otp-modal__content">
+                    <a class="otp-modal__close" id="close-login-modal"></a>
+                    <h4><strong>Log in</strong></h4>
+                    <form action="" method="POST" id="otp_contact_form2">
+                        <div class="cd-form__field">
+                            <input type="hidden" name="csrfmiddlewaretoken" value="9YyOuSoo262Dn92ZW3S2qDbZEjHm3aPJtjfKCVbWvdokPjZvsVfIqRyYF4ibdZ18">
+                            <div class="in-field">
+                                <input id="otp_contact2" name="contact" type="text" class="cf-input" placeholder="Your mobile number" maxlength="10" inputmode="numeric" pattern="[0-9]*">
+                                <input id="nid2" name="nid" type="text" value="COVERDRIVE_OTP" hidden>
+                                <input id="contact_type2" name="contact_type" type="text" value="pos" hidden>
+                            </div>
+                            <button type="submit" class="btn orange submit" id="send_otp">SEND OTP</button>
+                            <!-- <div ><a class="rgs-link" href='/partners/register-pos/'>Not a partner yet? Register Now</a></div> -->
+                        </div>
+                        <p class="error-text hide" id="otp_error_message2"></p>
+                    </form>
+
+                </div>
+            </div>
+    </section>
+
+    <section class="otp-modal hide header-modal" id="otp_popup">
+    <div class="otp-modal__content">
+        <a class="otp-modal__close" href="javascript:close_popup()"></a>
+        <h4><strong>Verify Your Number</strong></h4>
+        <p>
+            OTP sent to <span id="otp_popup_contact"></span>
+        </p>
+        <div class="otp-input">
+    <input type="text" placeholder="Enter OTP" id="otp" maxlength="6" inputmode="numeric" pattern="[0-9]*" autocomplete="one-time-code">
+</div>
+<div class="otp-error hide">OTP is invalid</div>
+<button class="btn btn--orange" id="otp_submit_btn">Submit</button>
+<div class="info-msg hide"></div>
+<div class="otp-modal__actions">
+    <span id="resending_otp" class="hide" >Resending OTP <img src="assets/ic_continue_dots.72bfe49d20d0.e426fe.png"></span>
+    <span id="sent_otp" class="hide" ><img src="assets/ic_checkmark.e1436e802e03.7e010b.png"> Sent new OTP</span>
+    <a  class="pipe-sep"  id="resend_otp" href="javascript:resend_otp()">Resend OTP</a>
+    
+    	<a id="wrong-number" href="javascript:close_popup()">Entered wrong number?</a>
+    
+</div>
+
+<script type="text/javascript">
+	var otpInput = document.querySelector("#otp");
+	otpInput.addEventListener('input',function() {
+		this.value = String(this.value).replace(/[^\d]/gu, '');
+	});
+	function preventNonNumbersInInput(event) {
+		if (event.key === 'Enter') {
+			document.getElementById('otp_submit_btn').click();
+			return
+		}
+		var characters = String.fromCharCode(event.which);
+		if(!(/[0-9]/.test(characters))){
+			event.preventDefault();
+		}
+	}
+	otpInput.addEventListener('keypress',preventNonNumbersInInput);
+
+	otpInput.addEventListener('paste',pasteTest);
+	function pasteTest(event){
+		window.setTimeout(() => {
+			var characters =event.target.value;
+			window.setTimeout(() => {
+				if(!(/^\d+$/.test(characters))){
+					event.target.value = event.target.value.replace(/\D/g, '');
+				}
+			});
+		});
+	};
+</script>
+
+    </div>
+</section>
+
+
+
+<script src="assets/payment-gtm.69feeb66f7a7.6992d3.js"></script>
+<script type="text/javascript">
+var transaction_id = '';
+var insurer = '';
+$(document).on('click', '#otp_submit_btn', function() {
+    var otp = $('#otp').val().trim();
+    if (otp) {
+        triggredEvent('otpSubmit',{
+        	transaction_id:transaction_id,
+        	insurer_name:insurer,
+        })
+    }
+});
+</script>
+
+
+
+        <!-- Google Tag Manager (noscript) (POS)-->
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NKRTCJ7"
+        height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        <!-- End Google Tag Manager (noscript) -->
+
+
+<script src="assets/apiRequest.c324f8d0d495.ebb1fd.js" async></script>
+<script src="assets/login.be4946052d0b.51e727.js" defer></script>
+<script src="assets/payment-gtm.69feeb66f7a7.6992d3.js" defer></script>
+<script src="assets/otp.469ed92576b3.df4587.js" defer></script>
+
+
+
+<script>
+    var CSRF_TOKEN = '9YyOuSoo262Dn92ZW3S2qDbZEjHm3aPJtjfKCVbWvdokPjZvsVfIqRyYF4ibdZ18';
+    var contact;
+    var contact_type; // This is being used as a global variable in otp.js
+    var nid; // This is being used as a global variable in otp.js
+    var email_re = /^([A-Z0-9]+(?:[+._-]?[A-Z0-9]+)*)@((?:(?:[A-Z0-9-]+\.)*\w[A-Z0-9-]{0,66})\.(?:[A-Z]{2,6}(?:\.[A-Z]{2})?))$/i;
+    var mobile_re = /^[6-9]\d{9}$/;
+    $(document).ready(function(){
+        const source = {source: window['ReactNativeWebView'] ? 'fos_app' : null}
+        window['trackEngageEvent'] &&  trackEngageEvent('sign_up_view', {
+				page_url: window.location.href,
+				type: 'view',
+                source,
+			})
+
+        function sendOtp(form){
+            var contact = $('#otp_contact2').val().trim();
+             $.post( '/otp/send/', form.serialize())
+                .done(function(data){
+                    $('.otp-error').addClass('hide');
+                    if(data.success){
+                        window['trackEngageEvent'] &&  trackEngageEvent('send_otp_click', {
+                            page_url: window.location.href,
+                            type: 'click',
+                        })
+                        $('#otp_popup').removeClass('hide');
+                        $('#login-modal').addClass('hide');
+                        $('#otp_popup_contact').text(contact);
+                        $("#otp_error_message2").addClass('hide');
+                    } else {
+                        if ($('#login-modal').hasClass('hide')){
+                            $("#otp_error_message").text(data.msg[0]);
+                            $("#otp_error_message").removeClass('hide');
+                        }
+                        else{
+                        $("#otp_error_message2").text(data.msg[0]);
+                        $("#otp_error_message2").removeClass('hide');
+                        }
+                    }
+                });
+        }
+
+        var show_otp_popup = false;
+        $("form[id='otp_contact_form']").on("submit", function(ev){
+            localStorage.setItem('loginflow', false);
+            ev.preventDefault();
+            $("#message").removeClass('hide');
+            var form = $(this);
+            contact = $('#otp_contact').val().trim();
+            contact_type = $('#contact_type').val().trim();
+            nid = $('#nid').val().trim();
+            localStorage.setItem("mob_id", contact);
+            if (contact.match(mobile_re)) {
+
+                // To verify whether user exist or not
+                $.post('/partners/posprofile/', form.serialize())
+                .done(function(data){
+                    if(data.success){
+
+                        // Setting redirect url for pos, which we gonna use after otp verification
+                        window.otp_redirect_url =  data.redirect_url
+
+                        // GTM
+                        triggredEvent('mobileSubmit')
+                        sendOtp(form)
+                        $("#otp_error_message").addClass('hide');
+                    } else {
+                        $("#otp_error_message").text(data.msg[0]);
+                        $("#otp_error_message").removeClass('hide');
+                    }
+                });
+            } else {
+                $("#otp_error_message").text("That doesn't look like a valid Mobile Number. Try again?");
+                $("#otp_error_message").removeClass('hide');
+            }
+        });
+
+        $('#login-nbbtn,#login-headbtn').click(function(){
+            $('#login-modal').removeClass('hide');
+        });
+
+        $('#close-login-modal').click(function(){
+            $('#login-modal').addClass('hide');
+        });
+
+        $('#join-btn').click(function(){
+            $('#otp_contact').focus();
+        });
+
+        $('#register-btn').click(function(){
+            var mobileNo = $('#otp_contact').val().trim();
+            $.post('/partners/pos-agent/leads/', {
+                mobile: mobileNo,
+                referer: document.referrer,
+                url: window.location.href,
+                csrfmiddlewaretoken: CSRF_TOKEN
+            })
+        });
+
+        /*Login Form Submission*/
+        $("form[id='otp_contact_form2']").on("submit", function(ev){
+            var mobile_no = document.getElementById("otp_contact2").value;
+            document.getElementById("otp_popup_contact").textContent = mobile_no;
+            localStorage.setItem('loginflow', true);
+            ev.preventDefault();
+            $("#message").removeClass('hide');
+            const otp_submit_btn =  document.querySelector('#otp_submit_btn')
+            otp_submit_btn && otp_submit_btn.removeAttribute('disabled')
+            otp_submit_btn && otp_submit_btn.classList.remove('disable')
+            var form = $(this);
+            contact = $('#otp_contact2').val().trim();
+            contact_type = $('#contact_type2').val().trim();
+            nid = $('#nid2').val().trim();
+            localStorage.setItem("mob_id", contact);
+            if (contact.match(mobile_re)) {
+
+                // To verify whether user exist or not
+                $.post('/partners/posprofile/', form.serialize())
+                .done(function(data){
+                    if(data.success){
+
+                        // Setting redirect url for pos, which we gonna use after otp verification
+                        window.otp_redirect_url =  data.redirect_url
+
+                        // GTM
+                        triggredEvent('mobileSubmit')
+                        sendOtp(form)
+                    } else {
+                        $("#otp_error_message2").text(data.msg[0]);
+                        $("#otp_error_message2").removeClass('hide');
+                    }
+                });
+            } else {
+                $("#otp_error_message2").text("That doesn't look like a valid Mobile Number. Try again?");
+                $("#otp_error_message2").removeClass('hide');
+            }
+        });
+
+        /* show verify popup directly if referrer available and provided */
+        if (0) {
+            show_otp_popup = true;
+        }
+        if (!contact) {
+            contact = '';
+            $('#otp_popup_contact').text(contact);
+        }
+        if (show_otp_popup) {
+            $('#otp_popup').removeClass('hide');
+        }
+        document.getElementById('otp_contact').addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                document.getElementById('register-btn').click();
+            }
+        });
+        document.getElementById('otp_contact2').addEventListener('keypress', (event) => {
+            if (event.key === 'Enter') {
+                document.getElementById('send_otp').click();
+            }
+        });
+    });
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            if (window['ReactNativeWebView']) {
+                document.querySelector('.pos-features-container').classList.add('hide-section');
+                document.querySelector('.coverdrive-benefits').classList.add('hide-section');
+                document.querySelector('.pos-partners-container').classList.add('hide-section');
+                document.querySelector('.pos-certified-container').classList.add('hide-section');
+            }
+        });
+    </script>
+    
+    
+
+    
+
+</body>
+
+</html>

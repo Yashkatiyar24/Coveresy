@@ -1,0 +1,1 @@
+$(function(){$(document).on("click","#forgot-pass",function(e){e.preventDefault(),$(this).parents(".login").addClass("cf-hidden"),$(".forgot-pass").removeClass("cf-hidden"),$(".error-text").hide()}),$(document).on("click","#login",function(e){e.preventDefault(),$(this).parents(".forgot-pass").addClass("cf-hidden"),$(".login").removeClass("cf-hidden")})});
