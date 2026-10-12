@@ -111,6 +111,9 @@ post('/applications/:id/documents', async (ctx) => {
   const app = await loadApp(ctx, ctx.params.id);
   if (!app) return errorPage(ctx, 404, 'Application not found.');
   const back = `/applications/${app.id}`;
+  if (!ctx.env.DOCS) {
+    return flash(back, 'err', 'Document storage is not configured yet: enable R2 on the Cloudflare account, then redeploy.');
+  }
 
   const form = await ctx.req.formData();
   const docType = String(form.get('doc_type') ?? '') as DocType;
@@ -175,6 +178,7 @@ get('/documents/:id/download', async (ctx) => {
   ).bind(ctx.params.id, ...scope.binds).first<{ id: string; storage_key: string; mime_type: string; original_name: string }>();
   if (!doc) return errorPage(ctx, 404, 'Document not found, or not visible to your account.');
 
+  if (!ctx.env.DOCS) return errorPage(ctx, 503, 'Document storage is not configured on this deployment.');
   const obj = await ctx.env.DOCS.get(doc.storage_key);
   if (!obj) return errorPage(ctx, 404, 'The stored file is missing. Report this to an administrator.');
 
@@ -236,7 +240,7 @@ post('/documents/:id/reject', async (ctx) => {
 post('/documents/:id/remove', async (ctx) => {
   const doc = await docWithApp(ctx, ctx.params.id);
   if (!doc) return errorPage(ctx, 404, 'Document not found.');
-  await ctx.env.DOCS.delete(doc.storage_key);
+  if (ctx.env.DOCS) await ctx.env.DOCS.delete(doc.storage_key);
   await ctx.env.DB.prepare("UPDATE application_documents SET status='removed', is_current=0 WHERE id=?").bind(doc.id).run();
   await ctx.env.DB.prepare(
     "INSERT INTO document_events (id, document_id, action, actor, before_json, after_json) VALUES (?,?,'remove',?,?,?)",

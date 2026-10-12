@@ -28,7 +28,7 @@ zone_name = "coveresy.com"
 [[env.production.d1_databases]]
 binding = "DB"
 database_name = "coveresy-ops"
-database_id = "local-placeholder-replace-after-d1-create"
+database_id = "5a6fbe35-e404-4dc0-bd2c-427d09c71af2"
 migrations_dir = "migrations"
 
 [[env.production.r2_buckets]]
@@ -38,9 +38,19 @@ bucket_name = "coveresy-docs"
 [[d1_databases]]
 binding = "DB"
 database_name = "coveresy-ops"
-database_id = "local-placeholder-replace-after-d1-create"
+database_id = "5a6fbe35-e404-4dc0-bd2c-427d09c71af2"
 migrations_dir = "migrations"
 
 [[r2_buckets]]
 binding = "DOCS"
 bucket_name = "coveresy-docs"
+
+# Live on workers.dev with production security settings, no custom domain.
+[env.staging]
+vars = { COVERESY_ENV = "production" }
+
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "coveresy-ops"
+database_id = "5a6fbe35-e404-4dc0-bd2c-427d09c71af2"
+migrations_dir = "migrations"

@@ -1,6 +1,12 @@
 import type { Env, Role, User } from './types.ts';
 
-const PBKDF2_ITERATIONS = 210_000; // OWASP 2023 floor for PBKDF2-SHA256
+// The Workers runtime refuses more than 100,000 PBKDF2 iterations in one call
+// ("iteration counts above 100000 are not supported"), while OWASP's floor for
+// PBKDF2-SHA256 is 210,000. Chaining rounds keeps the real work factor: each
+// round feeds the previous round's output back in as the password, so N rounds
+// cost N x ITERATIONS to compute and to attack.
+const PBKDF2_ITERATIONS = 100_000;
+const PBKDF2_ROUNDS = 3; // 300,000 effective, above the OWASP floor
 const SESSION_COOKIE = 'coveresy_session';
 const enc = new TextEncoder();
 
@@ -25,26 +31,43 @@ export function timingSafeEqual(a: string, b: string): boolean {
   return diff === 0;
 }
 
-async function pbkdf2(password: string, salt: Uint8Array, iterations: number): Promise<string> {
-  const key = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
-  const bits = await crypto.subtle.deriveBits(
+async function deriveOnce(material: BufferSource, salt: Uint8Array, iterations: number): Promise<ArrayBuffer> {
+  const key = await crypto.subtle.importKey('raw', material, 'PBKDF2', false, ['deriveBits']);
+  return crypto.subtle.deriveBits(
     { name: 'PBKDF2', salt: salt as BufferSource, iterations, hash: 'SHA-256' },
     key,
     256,
   );
-  return b64(bits);
+}
+
+async function pbkdf2(
+  password: string,
+  salt: Uint8Array,
+  iterations: number,
+  rounds: number,
+): Promise<string> {
+  let bits: BufferSource = enc.encode(password);
+  for (let i = 0; i < rounds; i++) bits = await deriveOnce(bits, salt, iterations);
+  return b64(bits as ArrayBuffer);
 }
 
 export async function hashPassword(password: string): Promise<string> {
   const salt = crypto.getRandomValues(new Uint8Array(16));
-  const hash = await pbkdf2(password, salt, PBKDF2_ITERATIONS);
-  return `pbkdf2$${PBKDF2_ITERATIONS}$${b64(salt.buffer)}$${hash}`;
+  const hash = await pbkdf2(password, salt, PBKDF2_ITERATIONS, PBKDF2_ROUNDS);
+  // Self-describing, so the work factor can be raised later without
+  // invalidating hashes already stored.
+  return `pbkdf2$${PBKDF2_ROUNDS}x${PBKDF2_ITERATIONS}$${b64(salt.buffer)}$${hash}`;
 }
 
 export async function verifyPassword(password: string, stored: string): Promise<boolean> {
-  const [scheme, iterStr, saltB64, expected] = stored.split('$');
-  if (scheme !== 'pbkdf2') return false;
-  const actual = await pbkdf2(password, unb64(saltB64), Number(iterStr));
+  const [scheme, costStr, saltB64, expected] = stored.split('$');
+  if (scheme !== 'pbkdf2' || !costStr || !saltB64 || !expected) return false;
+  // "3x100000" (rounds x iterations), or a bare count from the original format.
+  const [a, b] = costStr.split('x');
+  const rounds = b ? Number(a) : 1;
+  const iterations = b ? Number(b) : Number(a);
+  if (!Number.isFinite(rounds) || !Number.isFinite(iterations)) return false;
+  const actual = await pbkdf2(password, unb64(saltB64), iterations, rounds);
   return timingSafeEqual(actual, expected);
 }
 
