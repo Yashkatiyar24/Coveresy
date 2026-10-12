@@ -80,10 +80,32 @@ landing page returns to being served straight from Vercel.
 
 ## Order of work
 
-1. **Add `coveresy.com` to Cloudflare** (Anwar's account). Choose the Free plan.
-   Let it scan the existing records.
-2. **Reconcile against the table above.** Add anything missing. Set the Vercel
-   and Microsoft rows to **DNS only** (grey cloud).
+Do every Cloudflare step first. The GoDaddy nameserver change is the only
+irreversible-feeling moment, and by then Cloudflare is already answering
+correctly — so it is a no-op for users.
+
+### Step 1 — Add the domain to Cloudflare (nothing changes yet)
+
+1. Sign in at <https://dash.cloudflare.com> on **Anwar's account** (create it if
+   needed — a free account is enough; Workers routes work on the Free plan).
+2. **Add a domain** → type `coveresy.com` → continue.
+3. Choose the **Free** plan.
+4. Cloudflare scans the existing GoDaddy zone and lists what it found. This
+   changes nothing: GoDaddy is still live and authoritative.
+5. At the end Cloudflare shows **two nameservers**, like
+   `dana.ns.cloudflare.com` / `rick.ns.cloudflare.com`. Write them down.
+   **Do not change anything at GoDaddy yet.**
+### Step 2 — Reconcile the records
+
+In Cloudflare → **DNS** → **Records**, compare against the table above. Add
+anything missing; the scan is good but not guaranteed to be complete, and the
+email rows are the ones that matter.
+
+For this first pass set **every** record to **DNS only** (grey cloud), including
+the apex `A` and `www`. That makes Cloudflare behave exactly like GoDaddy does
+today — same answers, no proxying, no new behaviour. The orange cloud comes
+later, as its own step, so that if anything misbehaves you know which change
+caused it.
 3. **Verify before switching.** Query Cloudflare's nameservers directly, while
    the domain is still live on GoDaddy — this changes nothing for users:
    ```bash
@@ -104,9 +126,16 @@ landing page returns to being served straight from Vercel.
    curl -sI https://www.coveresy.com   # expect the landing page
    ```
    Send a test email in and out before considering the move done.
-6. **Turn on the proxy** for the apex `A` and `www` CNAME (orange cloud), set
-   SSL/TLS to **Full (strict)**, then load `https://www.coveresy.com` and
-   confirm the landing page is unchanged.
+### Step 5 — Turn on the proxy (a separate, reversible change)
+
+Only once the site and email have been confirmed healthy on Cloudflare DNS:
+
+1. **SSL/TLS → Overview → Full (strict)**. Do this *before* the orange cloud.
+   Any weaker mode causes a redirect loop, because Vercel always serves HTTPS.
+2. **DNS → Records**: switch the apex `A` and the `www` CNAME to **Proxied**
+   (orange cloud). Leave MX and the Microsoft rows grey.
+3. Load `https://www.coveresy.com`. If anything is wrong, set those two records
+   back to **DNS only** and you are immediately back to Vercel serving directly.
 7. **Only then deploy the portal:** `npm run deploy:prod`. The routes in
    `wrangler.toml` claim `coveresy.com/ops*` and `www.coveresy.com/ops*`;
    everything else on the domain keeps going to Vercel.
