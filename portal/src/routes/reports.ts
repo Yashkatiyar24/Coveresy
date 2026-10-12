@@ -1,6 +1,6 @@
 import { get, post } from '../router.ts';
 import { html } from '../html.ts';
-import { badge, errorPage, flash, flashFromUrl, page, pager, table } from '../ui.ts';
+import { badge, errorPage, flash, flashFromUrl, numh, page, pager, table } from '../ui.ts';
 import { audit } from '../audit.ts';
 import { randomId } from '../auth.ts';
 import { masters, visibilityScope } from '../db.ts';
@@ -44,7 +44,7 @@ get('/reports', async (ctx) => {
 
   type R = Record<string, number | string | null>;
   const money = (v: unknown) => html`<td class="num">&#8377;${rupees(Number(v ?? 0))}</td>`;
-  const sec = (title: string, headers: string[], rows: unknown[], render: (r: R) => ReturnType<typeof html>) =>
+  const sec = (title: string, headers: unknown[], rows: unknown[], render: (r: R) => ReturnType<typeof html>) =>
     html`<div class="card"><h2>${title}</h2>${table(headers, (rows as R[]).map(render), 'No data under these filters.')}</div>`;
 
   return page(
@@ -60,17 +60,17 @@ get('/reports', async (ctx) => {
       </div></div>
     ${flashFromUrl(ctx.url)}
     <p class="sub">Filter on the <a href="/applications">Policy MIS</a> page, then return here — the query string carries over.</p>
-    ${sec('Insurer-wise', ['Insurer', 'Apps', 'Issued', 'Premium', 'Gross', 'TDS', 'Net'], byInsurer.results,
+    ${sec('Insurer-wise', ['Insurer', ...['Apps', 'Issued', 'Premium', 'Gross', 'TDS', 'Net'].map(numh)], byInsurer.results,
       (r) => html`<tr><td>${r.k ?? '—'}</td><td class="num">${r.n}</td><td class="num">${r.issued ?? 0}</td>
         ${money(r.premium)}${money(r.gross)}${money(r.tds)}${money(r.net)}</tr>`)}
-    ${sec('Partner-wise', ['Partner', 'Code', 'Apps', 'Issued', 'Premium', 'Gross', 'TDS', 'Net', 'Paid'], byPartner.results,
+    ${sec('Partner-wise', ['Partner', 'Code', ...['Apps', 'Issued', 'Premium', 'Gross', 'TDS', 'Net', 'Paid'].map(numh)], byPartner.results,
       (r) => html`<tr><td>${r.k}</td><td><code>${r.code}</code></td><td class="num">${r.n}</td><td class="num">${r.issued ?? 0}</td>
         ${money(r.premium)}${money(r.gross)}${money(r.tds)}${money(r.net)}${money(r.paid)}</tr>`)}
-    ${sec('Broker-wise', ['Broker', 'Apps', 'Issued', 'Premium', 'Net payout'], byBroker.results,
+    ${sec('Broker-wise', ['Broker', ...['Apps', 'Issued', 'Premium', 'Net payout'].map(numh)], byBroker.results,
       (r) => html`<tr><td>${r.k}</td><td class="num">${r.n}</td><td class="num">${r.issued ?? 0}</td>${money(r.premium)}${money(r.net)}</tr>`)}
-    ${sec('Employee-wise', ['Employee', 'Apps', 'Issued', 'Premium'], byEmployee.results,
+    ${sec('Employee-wise', ['Employee', ...['Apps', 'Issued', 'Premium'].map(numh)], byEmployee.results,
       (r) => html`<tr><td>${r.k}</td><td class="num">${r.n}</td><td class="num">${r.issued ?? 0}</td>${money(r.premium)}</tr>`)}
-    ${sec('Monthly login and issuance', ['Month', 'Logged', 'Issued', 'Premium'], byMonth.results,
+    ${sec('Monthly login and issuance', ['Month', ...['Logged', 'Issued', 'Premium'].map(numh)], byMonth.results,
       (r) => html`<tr><td>${r.k ?? '—'}</td><td class="num">${r.n}</td><td class="num">${r.issued ?? 0}</td>${money(r.premium)}</tr>`)}`,
   );
 }, { cap: 'view_records' });
@@ -222,7 +222,7 @@ get('/imports', async (ctx) => {
         Unknown master-data names are reported as errors rather than created.</p>
     </div>
     <div class="card"><h2>Recent imports</h2>
-      ${table(['File', 'By', 'Status', 'Rows', 'OK', 'Failed', 'When'], results.map((im) => html`<tr>
+      ${table(['File', 'By', 'Status', numh('Rows'), numh('OK'), numh('Failed'), 'When'], results.map((im) => html`<tr>
         <td><a href="/imports/${im.id}">${im.file_name}</a></td><td>${im.uploader_name ?? '—'}</td>
         <td>${badge(im.status)}</td><td class="num">${im.rows_total}</td><td class="num">${im.rows_ok}</td>
         <td class="num">${im.rows_failed}</td><td>${im.created_at}</td></tr>`), 'No imports yet.')}</div>`,
@@ -333,7 +333,7 @@ get('/imports/:id', async (ctx) => {
       : ''}
     ${im.status === 'committed' ? html`<div class="flash ok">This import has already been committed.</div>` : ''}
     <div class="card"><h2>Row errors</h2>
-      ${table(['Row', 'Field', 'Problem'], errs.map((e) => html`<tr>
+      ${table([numh('Row'), 'Field', 'Problem'], errs.map((e) => html`<tr>
         <td class="num">${e.row_number}</td><td><code>${e.field ?? '—'}</code></td><td>${e.message}</td></tr>`),
         'No row errors.')}</div>`,
   );

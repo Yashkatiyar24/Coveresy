@@ -23,6 +23,7 @@ export const CSS = `
   --shadow:0 1px 2px rgba(43,64,74,.06),0 4px 16px rgba(43,64,74,.05);
 }
 *{box-sizing:border-box}
+html{overflow-x:hidden}
 body{margin:0;font:15px/1.5 Lato,"Helvetica Neue",Helvetica,Tahoma,Arial,sans-serif;color:var(--ink);background:var(--bg)}
 a{color:var(--brand);text-decoration:none}
 a:hover{color:var(--accent)}
@@ -31,20 +32,20 @@ main{max-width:1120px;margin:0 auto;padding:24px 16px 64px}
 main.wide{max-width:1560px}
 body.out{background:var(--brand)}
 body.out main{max-width:460px;padding-top:7vh}
-.loginmark{text-align:center;margin-bottom:22px}
-.loginmark img{width:190px}
+.loginmark{text-align:center;margin-bottom:24px}
+.loginmark img{height:38px;width:auto}
 
 /* header */
-.top{display:flex;align-items:center;gap:16px;background:var(--brand);color:#fff;padding:0 16px;flex-wrap:wrap}
-.brand{display:flex;align-items:center;gap:9px;padding:11px 0;color:#fff}
+.top{display:flex;align-items:center;gap:18px;background:var(--brand);color:#fff;padding:0 18px;flex-wrap:wrap;box-shadow:0 1px 0 rgba(0,0,0,.12)}
+.brand{display:flex;align-items:center;gap:10px;padding:15px 0;color:#fff;flex:0 0 auto}
 .brand:hover{text-decoration:none}
-.brand img{width:132px;display:block}
-.brand span{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);border-left:1px solid rgba(255,255,255,.3);padding-left:9px}
-.top nav{display:flex;gap:2px;flex:1;flex-wrap:wrap}
-.top nav a{color:#d6cfe8;padding:14px 11px;font-size:14px;border-bottom:3px solid transparent}
+.brand img{height:22px;width:auto;display:block}
+.brand span{font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);border-left:1px solid rgba(255,255,255,.28);padding-left:10px;line-height:1;white-space:nowrap}
+.top nav{display:flex;gap:0;flex:1 1 auto;flex-wrap:wrap;min-width:0}
+.top nav a{color:#d6cfe8;padding:17px 10px;font-size:13.5px;white-space:nowrap;border-bottom:3px solid transparent}
 .top nav a:hover{color:#fff;text-decoration:none}
 .top nav a.on{color:#fff;border-bottom-color:var(--gold)}
-.who{display:flex;align-items:center;gap:8px;font-size:13px;color:#d6cfe8}
+.who{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#d6cfe8;flex:0 0 auto}
 .who em{font-style:normal;background:rgba(255,255,255,.15);padding:2px 7px;border-radius:99px}
 .who form{margin:0}
 .navtoggle{display:none;background:none;border:0;color:#fff;font-size:22px;cursor:pointer}
@@ -58,10 +59,15 @@ h3{font-size:14px;margin:0 0 8px;text-transform:uppercase;letter-spacing:.06em;c
 .pagehead{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:18px}
 .pagehead p{margin:2px 0 0;color:var(--muted);font-size:14px}
 .sub{color:var(--muted);font-size:14px;margin:0 0 16px}
+/* Grid and flex children default to min-width:auto, so a date input or a
+   <select> holding a long option ("Rejected / cancelled") refuses to shrink
+   and pushes the whole page wider than the viewport. */
+.grid>*,.row>*,.split>*{min-width:0}
+select,input,textarea{max-width:100%}
 .grid{display:grid;gap:16px}
-.grid.c2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
-.grid.c3{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
-.grid.c4{grid-template-columns:repeat(auto-fit,minmax(175px,1fr))}
+.grid.c2{grid-template-columns:repeat(auto-fit,minmax(min(560px,100%),1fr))}
+.grid.c3{grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr))}
+.grid.c4{grid-template-columns:repeat(auto-fill,minmax(min(186px,100%),1fr))}
 
 /* stats */
 .stat{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
@@ -79,6 +85,7 @@ th{background:#faf9fc;font-size:12px;text-transform:uppercase;letter-spacing:.05
 tbody tr:last-child td{border-bottom:0}
 tbody tr:hover{background:#faf8fd}
 td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.numh{display:block;text-align:right}
 a.sort{color:var(--muted)}
 .pager{display:flex;align-items:center;gap:12px;margin-top:12px;font-size:13px}
 .pg{padding:5px 11px;border:1px solid var(--line);border-radius:var(--radius);background:var(--card)}
@@ -105,7 +112,7 @@ input[type=file]{padding:8px}
 input[type=radio],input[type=checkbox]{accent-color:var(--accent);width:auto}
 .field{margin-bottom:14px}
 .field small{display:block;color:var(--muted);font-size:12px;margin-top:4px}
-.row{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.row{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr))}
 fieldset{border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin:0 0 18px}
 legend{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;padding:0 6px}
 button,.btn{display:inline-block;padding:9px 16px;border:1px solid var(--accent);border-radius:var(--radius);background:var(--accent);color:#fff;font:inherit;font-weight:700;cursor:pointer}
@@ -126,7 +133,7 @@ form.inline{display:inline}
 
 /* filters */
 .filters{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:14px;margin-bottom:16px}
-.filters .row{grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:10px}
+.filters .row{grid-template-columns:repeat(auto-fit,minmax(min(155px,100%),1fr));gap:10px}
 .filters label{font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
 .filters input,.filters select{padding:7px 9px;font-size:13.5px}
 
@@ -142,7 +149,7 @@ form.inline{display:inline}
 .missinglist{color:var(--bad);font-size:13.5px;margin:6px 0 0}
 
 /* detail layout */
-.split{display:grid;gap:20px;grid-template-columns:minmax(0,2fr) minmax(280px,1fr);align-items:start}
+.split{display:grid;gap:20px;grid-template-columns:minmax(0,2fr) minmax(min(280px,100%),1fr);align-items:start}
 dl.kv{display:grid;grid-template-columns:auto 1fr;gap:7px 16px;margin:0;font-size:14px}
 dl.kv dt{color:var(--muted)}
 dl.kv dd{margin:0;font-weight:500;word-break:break-word}
@@ -153,6 +160,10 @@ dl.kv dd{margin:0;font-weight:500;word-break:break-word}
 code{background:var(--neutral-bg);padding:1px 6px;border-radius:4px;font-size:13px}
 pre{background:var(--brand-dark);color:#d7e4f2;padding:14px;border-radius:8px;overflow:auto;font-size:12.5px}
 
+@media(max-width:620px){
+  .filters .row{grid-template-columns:1fr}
+  main{padding-left:16px;padding-right:16px}
+}
 @media(max-width:860px){
   .navtoggle{display:block;order:2;margin-left:auto}
   .top nav{display:none;flex-basis:100%;flex-direction:column;order:4}

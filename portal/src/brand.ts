@@ -1,10 +1,16 @@
 /**
- * Brand assets, copied verbatim from the public site's assets/ so the portal
- * and the landing page cannot drift apart. Served by src/index.ts.
+ * Brand assets, taken from the public site's assets/ so the portal and the
+ * landing page cannot drift apart. Served by src/index.ts.
+ *
+ * The wordmark's viewBox is cropped to the artwork: the original centres a
+ * 727.7x159.9 wordmark on a 1145.87x640.34 canvas, 84% of which is empty, so
+ * sizing the raw file in a compact header renders a tiny mark adrift in
+ * whitespace. Cropped, its box IS the wordmark, so `height` in CSS means
+ * what it says. The file on disk is untouched; the landing page still uses it.
  */
 
 export const LOGO_SVG = `<?xml version="1.0" encoding="UTF-8"?>
-<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1145.87 640.34">
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="199.0 229.5 747.7 179.9">
   <defs>
     <style>
       .cls-1 {

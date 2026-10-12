@@ -87,6 +87,11 @@ export function table(headers: unknown[], rows: Array<ReturnType<typeof html>>, 
     <tbody>${rows}</tbody></table></div>`;
 }
 
+/** Right-aligns a column header over its numeric cells. */
+export function numh(node: unknown) {
+  return html`<span class="numh">${node}</span>`;
+}
+
 /** Sortable column header that preserves the current filters. */
 export function sortLink(url: URL, field: string, text: string) {
   const cur = url.searchParams.get('sort');

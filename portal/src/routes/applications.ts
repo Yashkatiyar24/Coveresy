@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { get, post } from '../router.ts';
 import { html, raw } from '../html.ts';
-import { badge, flash, page, pager, sortLink, table, redirect, flashFromUrl, errorPage } from '../ui.ts';
+import { badge, flash, numh, page, pager, sortLink, table, redirect, flashFromUrl, errorPage } from '../ui.ts';
 import { audit } from '../audit.ts';
 import { can, randomId } from '../auth.ts';
 import { masters, nameOf, listUsers } from '../db.ts';
@@ -69,11 +69,11 @@ get('/applications', async (ctx) => {
         sortLink(ctx.url, 'category', 'Category'),
         'Insurer',
         sortLink(ctx.url, 'policy_no', 'Policy No'),
-        sortLink(ctx.url, 'premium', 'Premium'),
+        numh(sortLink(ctx.url, 'premium', 'Premium')),
         sortLink(ctx.url, 'status', 'Status'),
         sortLink(ctx.url, 'doc_status', 'Documents'),
         'Payout',
-        'Net Payout',
+        numh('Net Payout'),
         sortLink(ctx.url, 'login_date', 'Login Date'),
       ],
       rows,

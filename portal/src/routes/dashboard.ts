@@ -1,6 +1,6 @@
 import { get } from '../router.ts';
 import { html, raw } from '../html.ts';
-import { badge, flashFromUrl, page, table } from '../ui.ts';
+import { badge, flashFromUrl, numh, page, table } from '../ui.ts';
 import { buildFilter } from '../service.ts';
 import { rupees } from '../payout.ts';
 import { masters } from '../db.ts';
@@ -104,25 +104,25 @@ get('/', async (ctx) => {
 
     <div class="grid c2">
       <div class="card"><h2>By policy status</h2>
-        ${table(['Status', 'Count'], APP_STATUSES.filter((s) => statusMap.get(s)).map(
+        ${table(['Status', numh('Count')], APP_STATUSES.filter((s) => statusMap.get(s)).map(
           (s) => html`<tr><td>${badge(s)}</td><td class="num">${statusMap.get(s)}</td></tr>`), 'No applications yet.')}</div>
 
       <div class="card"><h2>Monthly trend</h2>
-        ${table(['Month', 'Logged', 'Issued'], trend.results.map(
+        ${table(['Month', numh('Logged'), numh('Issued')], trend.results.map(
           (t) => html`<tr><td>${t.month ?? '—'}</td><td class="num">${t.logged}</td><td class="num">${t.issued ?? 0}</td></tr>`), 'No data yet.')}</div>
 
       <div class="card"><h2>Insurer-wise</h2>
-        ${table(['Insurer', 'Apps', 'Premium', 'Net payout'], byInsurer.results.map(
+        ${table(['Insurer', numh('Apps'), numh('Premium'), numh('Net payout')], byInsurer.results.map(
           (r) => html`<tr><td>${r.name ?? '—'}</td><td class="num">${r.n}</td>
             <td class="num">&#8377;${rupees(r.premium)}</td><td class="num">&#8377;${rupees(r.net)}</td></tr>`), 'No data yet.')}</div>
 
       <div class="card"><h2>Partner-wise</h2>
-        ${table(['Partner', 'Code', 'Apps', 'Premium', 'Net payout'], byPartner.results.map(
+        ${table(['Partner', 'Code', numh('Apps'), numh('Premium'), numh('Net payout')], byPartner.results.map(
           (r) => html`<tr><td>${r.name}</td><td><code>${r.partner_code}</code></td><td class="num">${r.n}</td>
             <td class="num">&#8377;${rupees(r.premium)}</td><td class="num">&#8377;${rupees(r.net)}</td></tr>`), 'No partner-linked records.')}</div>
 
       <div class="card"><h2>Employee-wise</h2>
-        ${table(['Employee', 'Apps', 'Issued', 'Premium'], byEmployee.results.map(
+        ${table(['Employee', numh('Apps'), numh('Issued'), numh('Premium')], byEmployee.results.map(
           (r) => html`<tr><td>${r.name}</td><td class="num">${r.n}</td><td class="num">${r.issued ?? 0}</td>
             <td class="num">&#8377;${rupees(r.premium)}</td></tr>`), 'No employee-linked records.')}</div>
     </div>`,

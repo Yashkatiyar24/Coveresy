@@ -1,6 +1,6 @@
 import { get, post } from '../router.ts';
 import { html, raw } from '../html.ts';
-import { badge, errorPage, flash, flashFromUrl, page, pager, table } from '../ui.ts';
+import { badge, errorPage, flash, flashFromUrl, numh, page, pager, table } from '../ui.ts';
 import { audit } from '../audit.ts';
 import { can, randomId } from '../auth.ts';
 import { visibilityScope } from '../db.ts';
@@ -82,7 +82,8 @@ get('/payouts', async (ctx) => {
       <div class="stat"><b>&#8377;${rupees(totals!.t)}</b><span>TDS (filtered)</span></div>
       <div class="stat"><b>&#8377;${rupees(totals!.n)}</b><span>Net (filtered)</span></div>
     </div>
-    ${table(['Application', 'Customer', 'Partner', 'Insurer', 'Base', 'Payout %', 'Gross', 'TDS', 'Net', 'Status', 'UTR'],
+    ${table(['Application', 'Customer', 'Partner', 'Insurer', numh('Base'), numh('Payout %'),
+      numh('Gross'), numh('TDS'), numh('Net'), 'Status', 'UTR'],
       body, 'No payout records match.')}
     ${pager(ctx.url, p, count?.n ?? 0, PER_PAGE)}`,
   );

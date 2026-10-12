@@ -1,6 +1,6 @@
 import { get, post } from '../router.ts';
 import { html, raw } from '../html.ts';
-import { badge, errorPage, flash, page, table, flashFromUrl } from '../ui.ts';
+import { badge, errorPage, flash, numh, page, table, flashFromUrl } from '../ui.ts';
 import { audit } from '../audit.ts';
 import { can, hex, randomId } from '../auth.ts';
 import { num, visibilityScope } from '../db.ts';
@@ -281,7 +281,7 @@ get('/verification', async (ctx) => {
     html`<div class="pagehead"><div><h1>Document Verification Queue</h1>
       <p>Applications whose documents are incomplete, awaiting verification or rejected.</p></div></div>
     ${flashFromUrl(ctx.url)}
-    ${table(['Application No', 'Customer', 'Category', 'Insurer', 'Documents', 'Awaiting', 'Rejected', 'Policy status', 'Updated'],
+    ${table(['Application No', 'Customer', 'Category', 'Insurer', 'Documents', numh('Awaiting'), numh('Rejected'), 'Policy status', 'Updated'],
       rows, 'Nothing is waiting on documents.')}`,
   );
 }, { cap: 'view_records' });
