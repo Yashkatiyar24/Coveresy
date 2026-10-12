@@ -4,6 +4,8 @@ export interface Env {
   COVERESY_ENV?: string;
   COVERESY_SESSION_SECRET?: string;
   COVERESY_SETUP_TOKEN?: string;
+  /** Mount path when served under a subpath, e.g. "/ops". Empty = root. */
+  BASE_PATH?: string;
 }
 
 export type Role = 'admin' | 'operator' | 'viewer';

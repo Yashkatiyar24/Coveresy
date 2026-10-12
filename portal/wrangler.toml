@@ -11,12 +11,19 @@ COVERESY_ENV = "development"
 # The custom domain needs coveresy.com on Cloudflare DNS first — see
 # DNS-MIGRATION.md. Until then, comment out [[env.production.routes]] and the
 # Worker is reachable at its workers.dev URL.
+# Mounted at coveresy.com/ops. BASE_PATH is what makes the app emit and accept
+# that prefix; the routes below are what send those requests to this Worker.
+# Everything else on the domain continues to the Vercel origin untouched.
 [env.production]
-vars = { COVERESY_ENV = "production" }
+vars = { COVERESY_ENV = "production", BASE_PATH = "/ops" }
 
 [[env.production.routes]]
-pattern = "ops.coveresy.com"
-custom_domain = true
+pattern = "coveresy.com/ops*"
+zone_name = "coveresy.com"
+
+[[env.production.routes]]
+pattern = "www.coveresy.com/ops*"
+zone_name = "coveresy.com"
 
 [[env.production.d1_databases]]
 binding = "DB"

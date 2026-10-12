@@ -2,7 +2,8 @@ import type { Ctx, Env } from './types.ts';
 import type { Capability } from './auth.ts';
 import { can, userFromRequest } from './auth.ts';
 import { loadSettings } from './db.ts';
-import { errorPage } from './ui.ts';
+import { errorPage, redirect } from './ui.ts';
+import { setBasePath } from './html.ts';
 
 export type Handler = (ctx: Ctx) => Promise<Response> | Response;
 
@@ -47,6 +48,21 @@ function originOk(req: Request, url: URL): boolean {
 
 export async function handle(req: Request, env: Env): Promise<Response> {
   const url = new URL(req.url);
+
+  // The portal may be mounted under a path (BASE_PATH="/ops"). Routes are
+  // declared without it; strip it here so there is exactly one place that
+  // knows, and one place that puts it back (html.ts / redirect()).
+  const base = (env.BASE_PATH ?? '').replace(/\/+$/, '');
+  setBasePath(base);
+  if (base) {
+    if (url.pathname === base) url.pathname = '/';
+    else if (url.pathname.startsWith(base + '/')) url.pathname = url.pathname.slice(base.length);
+    else {
+      // Outside the mount point. In production the edge only forwards
+      // BASE_PATH/*, so this is belt and braces rather than a live path.
+      return new Response('Not found', { status: 404, headers: { 'Content-Type': 'text/plain' } });
+    }
+  }
   const ip = req.headers.get('CF-Connecting-IP') ?? req.headers.get('X-Forwarded-For') ?? 'local';
 
   // Candidates are ranked by how many LITERAL segments they match, so
@@ -68,7 +84,8 @@ export async function handle(req: Request, env: Env): Promise<Response> {
 
     if (!r.public && !user) {
       const next = encodeURIComponent(url.pathname + url.search);
-      return new Response(null, { status: 303, headers: { Location: `/login?next=${next}` } });
+      // Via redirect() so the mount path is applied, as for every other Location.
+      return redirect(`/login?next=${next}`);
     }
     if (r.cap && !can(user, r.cap, settings)) {
       return errorPage(ctx, 403, 'Your role does not permit this action.');

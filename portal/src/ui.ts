@@ -1,4 +1,4 @@
-import { html, render } from './html.ts';
+import { html, render, withBase } from './html.ts';
 import { ASSET_VERSION } from './brand.ts';
 import { CSS_VERSION } from './styles.ts';
 import type { Ctx, User } from './types.ts';
@@ -128,7 +128,7 @@ export function pager(url: URL, page: number, total: number, perPage: number) {
 }
 
 export function redirect(to: string, extra?: Record<string, string>): Response {
-  const headers = new Headers({ Location: to });
+  const headers = new Headers({ Location: withBase(to) });
   if (extra) for (const [k, v] of Object.entries(extra)) headers.append(k, v);
   return new Response(null, { status: 303, headers });
 }

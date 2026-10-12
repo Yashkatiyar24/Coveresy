@@ -35,14 +35,19 @@ normally.
 
 ## 2. Deploy to Cloudflare
 
-The portal is destined for **https://ops.coveresy.com**, on Anwar's Cloudflare
-account. That hostname needs `coveresy.com` moved to Cloudflare DNS first —
+The portal is destined for **https://coveresy.com/ops**, on Anwar's Cloudflare
+account. That path needs `coveresy.com` moved to Cloudflare DNS first —
 **read [DNS-MIGRATION.md](DNS-MIGRATION.md) before touching the domain**, because
 company email runs on Microsoft 365 and those records have to survive the move.
 
-Until the domain is across, deploy without the custom domain (comment out
-`[[env.production.routes]]` in `wrangler.toml`) and the Worker is reachable at
-its `workers.dev` URL. Nothing has to be redone when the domain lands.
+Until the domain is across, deploy without the routes (comment out both
+`[[env.production.routes]]` blocks and drop `BASE_PATH` from the production
+vars) and the Worker is reachable at its `workers.dev` URL. Nothing has to be
+redone when the domain lands.
+
+The mount path is configuration, not hardcoding: `BASE_PATH="/ops"` makes the
+app emit and accept that prefix everywhere. It runs at the root in development
+and under `/ops` in production, and the full smoke suite passes against both.
 
 
 Run these from `portal/`, signed in to the Coveresy Cloudflare account.

@@ -109,14 +109,21 @@ export function readCookie(req: Request, name: string): string | null {
   return null;
 }
 
+/** Scope the cookie to the mount path: at coveresy.com/ops it is never sent
+ *  to the marketing site on the same domain. */
+function cookiePath(env: Env): string {
+  const base = (env.BASE_PATH ?? '').replace(/\/+$/, '');
+  return base || '/';
+}
+
 export function sessionCookie(token: string, env: Env, hours: number): string {
   const secure = env.COVERESY_ENV === 'development' ? '' : ' Secure;';
-  return `${SESSION_COOKIE}=${token}; Path=/; HttpOnly;${secure} SameSite=Lax; Max-Age=${hours * 3600}`;
+  return `${SESSION_COOKIE}=${token}; Path=${cookiePath(env)}; HttpOnly;${secure} SameSite=Lax; Max-Age=${hours * 3600}`;
 }
 
 export function clearCookie(env: Env): string {
   const secure = env.COVERESY_ENV === 'development' ? '' : ' Secure;';
-  return `${SESSION_COOKIE}=; Path=/; HttpOnly;${secure} SameSite=Lax; Max-Age=0`;
+  return `${SESSION_COOKIE}=; Path=${cookiePath(env)}; HttpOnly;${secure} SameSite=Lax; Max-Age=0`;
 }
 
 /* ---------------------------------------------------------------- authz --- */

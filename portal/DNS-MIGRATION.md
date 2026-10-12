@@ -1,4 +1,4 @@
-# Putting the portal on ops.coveresy.com
+# Putting the portal on coveresy.com/ops
 
 Captured from the live zone on 13 October 2026, before any change.
 
@@ -30,8 +30,8 @@ an orange one — proxying Vercel or mail through Cloudflare breaks them.
 
 | Type | Name | Value | Proxy | Purpose |
 |---|---|---|---|---|
-| A | `@` | `216.198.79.1` | **DNS only** | Vercel — landing page |
-| CNAME | `www` | `5535e23b6cf5f52b.vercel-dns-017.com` | **DNS only** | Vercel — landing page |
+| A | `@` | `216.198.79.1` | **Proxied** (orange) | Vercel — landing page |
+| CNAME | `www` | `5535e23b6cf5f52b.vercel-dns-017.com` | **Proxied** (orange) | Vercel — landing page |
 | MX | `@` | `coveresy-com.mail.protection.outlook.com` priority `0` | n/a | **Email — inbound** |
 | TXT | `@` | `v=spf1 include:spf.protection.outlook.com -all` | n/a | **Email — SPF** |
 | TXT | `@` | `v=verifydomain MS=3266905` | n/a | **Email — M365 domain proof** |
@@ -55,6 +55,28 @@ breaks mail signing:
 ```
 v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvnZcbI0tPBG5T+0pzUs7EolpuDR/NdoJOM8cmcmVAGxPH0EcY/htbyrTADqL04PGAbFkX/yQWd7vCYRjX9csC1N8zV+0zBgEKS9uUWH/xcgj3FDGxEsIZLIu+xthUH6PqfxcccHFJEc5ja2WxV6LtO6lyP6KV4e+9qLlmIO26Pa6hIVKeNMTySfKK9bYxo0zgXgNa9l3kVoFRb9eT+47xc/EBNRenvZ5I9Kun+6m6xMP6NY5c5bBzr7VJQOc7pbOSNPXkrf3xIQ0xt8nC8KXd0+87HRqmH4aba+Q635cFsNnDWZkHZoeStgA3ul7MtqB3SkPkdGgyZ2l9ze4A3jP6wIDAQAB
 ```
+
+## Why the website records must be proxied for a /ops path
+
+A Worker route on a path (`coveresy.com/ops*`) only fires if that hostname is
+**proxied** through Cloudflare — orange cloud. Cloudflare then sits in front of
+the whole domain: it answers `/ops*` from the Worker and passes everything else
+through to Vercel.
+
+That is the trade a path makes. `ops.coveresy.com` as a subdomain would leave
+Vercel on grey-cloud and completely untouched; `coveresy.com/ops` cannot.
+
+Two settings matter once the apex and `www` are proxied:
+
+- **SSL/TLS mode must be Full (strict).** Anything less loops or breaks, because
+  Vercel always serves HTTPS and redirects HTTP.
+- **Leave the mail and Microsoft rows unproxied.** MX cannot be proxied at all,
+  and `autodiscover`, `enterpriseregistration` and `enterpriseenrollment` must
+  stay grey-cloud.
+
+Check `https://www.coveresy.com` immediately after enabling the proxy, before
+going further. If anything is off, set those two records back to DNS only — the
+landing page returns to being served straight from Vercel.
 
 ## Order of work
 
@@ -82,9 +104,16 @@ v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvnZcbI0tPBG5T+0pzU
    curl -sI https://www.coveresy.com   # expect the landing page
    ```
    Send a test email in and out before considering the move done.
-6. **Only then deploy the portal** (README §2) and add the custom domain
-   `ops.coveresy.com` to the Worker. Cloudflare creates that DNS record and
-   issues the certificate itself.
+6. **Turn on the proxy** for the apex `A` and `www` CNAME (orange cloud), set
+   SSL/TLS to **Full (strict)**, then load `https://www.coveresy.com` and
+   confirm the landing page is unchanged.
+7. **Only then deploy the portal:** `npm run deploy:prod`. The routes in
+   `wrangler.toml` claim `coveresy.com/ops*` and `www.coveresy.com/ops*`;
+   everything else on the domain keeps going to Vercel.
+8. **Verify the live portal**, which is the §20 acceptance run:
+   ```bash
+   BASE=https://www.coveresy.com/ops SETUP_TOKEN=<token> ./test/smoke.sh
+   ```
 
 ## Rollback
 
@@ -95,6 +124,10 @@ exists — verify before the switch, not after.
 
 ## Afterwards
 
-`ops.coveresy.com` is internal. Consider putting Cloudflare Access in front of
-it, so reaching the login page needs a company identity as well as a password.
-That is a Cloudflare dashboard setting and needs no change to this code.
+`coveresy.com/ops` is internal. Consider putting Cloudflare Access in front of
+that path, so reaching the login page needs a company identity as well as a
+password. That is a Cloudflare dashboard setting and needs no change to this
+code.
+
+The portal's session cookie is scoped `Path=/ops`, so it is never sent with
+requests to the marketing site sharing the domain.
