@@ -24,7 +24,8 @@ function secretsMissingPage(ctx: Ctx) {
 
   return page(
     { title: 'Server setup required' },
-    html`<div class="card">
+    html`<div class="loginmark"><img src="/logo.svg" alt="Coveresy"></div>
+    <div class="card">
       <h1>Server setup required</h1>
       <p class="sub">The portal cannot start a session until these server-side secrets are configured. They are never shown to the browser.</p>
       <ul>${missing.map((m) => html`<li><code>${m}</code></li>`)}</ul>
@@ -47,9 +48,10 @@ get('/login', async (ctx) => {
   const next = ctx.url.searchParams.get('next') ?? '/';
   return page(
     { title: 'Log in' },
-    html`<div class="card">
-      <h1>Coveresy Ops</h1>
-      <p class="sub">Internal insurance operations portal.</p>
+    html`<div class="loginmark"><img src="/logo.svg" alt="Coveresy"></div>
+    <div class="card">
+      <h1>Operations portal</h1>
+      <p class="sub">Internal access for the Coveresy operations team.</p>
       ${err ? html`<div class="flash err">${err}</div>` : ''}
       <form method="post" action="/auth/login">
         <input type="hidden" name="next" value="${next}">
@@ -68,7 +70,8 @@ get('/setup', async (ctx) => {
   if (await adminExists(ctx)) {
     return page(
       { title: 'Setup complete' },
-      html`<div class="card">
+      html`<div class="loginmark"><img src="/logo.svg" alt="Coveresy"></div>
+      <div class="card">
         <h1>Setup already complete</h1>
         <p class="sub">An administrator account exists, so first-run setup is closed. Rotate or remove <code>COVERESY_SETUP_TOKEN</code> now.</p>
         <p><a class="btn" href="/login">Go to login</a></p>
@@ -78,7 +81,8 @@ get('/setup', async (ctx) => {
   const err = ctx.url.searchParams.get('err');
   return page(
     { title: 'First administrator' },
-    html`<div class="card">
+    html`<div class="loginmark"><img src="/logo.svg" alt="Coveresy"></div>
+    <div class="card">
       <h1>Create the first administrator</h1>
       <p class="sub">This runs once and is protected by the one-time setup token. There is no default password.</p>
       ${err ? html`<div class="flash err">${err}</div>` : ''}

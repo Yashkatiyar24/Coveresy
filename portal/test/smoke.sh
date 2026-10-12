@@ -2,7 +2,7 @@
 # §20 live smoke test. Run against a running `npm run dev` (or a staging URL).
 #   BASE=http://127.0.0.1:8788 SETUP_TOKEN=... ./test/smoke.sh
 set -u
-BASE="${BASE:-http://127.0.0.1:8788}"
+BASE="${BASE:-http://127.0.0.1:8787}"
 TOKEN="${SETUP_TOKEN:-$(grep COVERESY_SETUP_TOKEN .dev.vars | cut -d'"' -f2)}"
 JAR=$(mktemp); OPJAR=$(mktemp); TMP=$(mktemp -d)
 # Every record this run creates is suffixed, so the script is rerunnable

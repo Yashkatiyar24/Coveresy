@@ -37,10 +37,13 @@ export function page(opts: PageOpts, body: ReturnType<typeof html>): Response {
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${opts.title} · Coveresy Ops</title>
 <link rel="stylesheet" href="/app.css">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
 </head><body class="${u ? 'in' : 'out'}">
 ${u
     ? html`<header class="top">
-  <a class="brand" href="/">Coveresy<span>Ops</span></a>
+  <a class="brand" href="/"><img src="/logo.svg" alt="Coveresy"><span>Ops</span></a>
   <button class="navtoggle" aria-label="Menu" onclick="document.body.classList.toggle('navopen')">&#9776;</button>
   <nav>${nav}</nav>
   <div class="who"><span>${u.name}</span><em>${label(u.role)}</em>

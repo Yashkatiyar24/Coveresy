@@ -1,5 +1,6 @@
 import { get, handle } from './router.ts';
 import { CSS } from './styles.ts';
+import { FAVICON_SVG, LOGO_SVG } from './brand.ts';
 import type { Env } from './types.ts';
 
 // Importing a route module registers its routes. Order is specificity-free:
@@ -17,6 +18,13 @@ get('/app.css', () => new Response(CSS, {
   headers: { 'Content-Type': 'text/css; charset=utf-8', 'Cache-Control': 'public, max-age=300' },
 }), { public: true });
 
+const svg = (body: string) => () => new Response(body, {
+  headers: { 'Content-Type': 'image/svg+xml; charset=utf-8', 'Cache-Control': 'public, max-age=86400' },
+});
+
+get('/logo.svg', svg(LOGO_SVG), { public: true });
+get('/favicon.svg', svg(FAVICON_SVG), { public: true });
+
 get('/healthz', () => new Response('ok', { headers: { 'Content-Type': 'text/plain' } }), { public: true });
 
 export default {
@@ -27,7 +35,7 @@ export default {
     h.set('Referrer-Policy', 'same-origin');
     h.set('X-Content-Type-Options', 'nosniff');
     h.set('Content-Security-Policy',
-      "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'none'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
+      "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; script-src 'none'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'");
     if (env.COVERESY_ENV !== 'development') {
       h.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
     }
