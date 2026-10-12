@@ -7,6 +7,27 @@ compatibility_date = "2025-01-15"
 # are set with `wrangler secret put` and never live in this file.
 COVERESY_ENV = "development"
 
+# Production deploy: `wrangler deploy --env production`.
+# The custom domain needs coveresy.com on Cloudflare DNS first — see
+# DNS-MIGRATION.md. Until then, comment out [[env.production.routes]] and the
+# Worker is reachable at its workers.dev URL.
+[env.production]
+vars = { COVERESY_ENV = "production" }
+
+[[env.production.routes]]
+pattern = "ops.coveresy.com"
+custom_domain = true
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "coveresy-ops"
+database_id = "local-placeholder-replace-after-d1-create"
+migrations_dir = "migrations"
+
+[[env.production.r2_buckets]]
+binding = "DOCS"
+bucket_name = "coveresy-docs"
+
 [[d1_databases]]
 binding = "DB"
 database_name = "coveresy-ops"

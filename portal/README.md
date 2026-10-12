@@ -35,6 +35,16 @@ normally.
 
 ## 2. Deploy to Cloudflare
 
+The portal is destined for **https://ops.coveresy.com**, on Anwar's Cloudflare
+account. That hostname needs `coveresy.com` moved to Cloudflare DNS first —
+**read [DNS-MIGRATION.md](DNS-MIGRATION.md) before touching the domain**, because
+company email runs on Microsoft 365 and those records have to survive the move.
+
+Until the domain is across, deploy without the custom domain (comment out
+`[[env.production.routes]]` in `wrangler.toml`) and the Worker is reachable at
+its `workers.dev` URL. Nothing has to be redone when the domain lands.
+
+
 Run these from `portal/`, signed in to the Coveresy Cloudflare account.
 
 ```bash

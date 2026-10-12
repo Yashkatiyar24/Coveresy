@@ -9,7 +9,9 @@
     "seed:local": "wrangler d1 execute coveresy-ops --local --file=./migrations/seed.sql",
     "typecheck": "tsc --noEmit",
     "test": "node --test \"test/*.test.mjs\"",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "deploy:prod": "wrangler deploy --env production",
+    "migrate:prod": "wrangler d1 migrations apply coveresy-ops --remote"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^5.20261006.1",
