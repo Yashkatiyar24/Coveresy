@@ -175,3 +175,13 @@ pre{background:var(--brand-dark);color:#d7e4f2;padding:14px;border-radius:8px;ov
 }
 @media print{.top,.actions,.filters,.pager{display:none}body{background:#fff}}
 `;
+
+/** Changes whenever the stylesheet does, so browsers pick it up immediately. */
+export const CSS_VERSION = (() => {
+  let h = 2166136261;
+  for (let i = 0; i < CSS.length; i++) {
+    h ^= CSS.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return (h >>> 0).toString(36);
+})();

@@ -39,3 +39,22 @@ export const FAVICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0
   <circle cx="46.5" cy="40.5" r="4.6" fill="#f7ca15"/>
 </svg>
 `;
+
+/**
+ * Content hash of the assets above, used as a cache-busting query on the URLs
+ * in the page. Without it a long max-age pins an old logo in every browser
+ * that has already seen one, and the next edit to this file is invisible until
+ * the cache expires — which is exactly what happened once already.
+ */
+function hash(...parts: string[]): string {
+  let h = 2166136261;
+  for (const s of parts) {
+    for (let i = 0; i < s.length; i++) {
+      h ^= s.charCodeAt(i);
+      h = Math.imul(h, 16777619);
+    }
+  }
+  return (h >>> 0).toString(36);
+}
+
+export const ASSET_VERSION = hash(LOGO_SVG, FAVICON_SVG);

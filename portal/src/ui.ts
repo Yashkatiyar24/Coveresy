@@ -1,4 +1,6 @@
 import { html, render } from './html.ts';
+import { ASSET_VERSION } from './brand.ts';
+import { CSS_VERSION } from './styles.ts';
 import type { Ctx, User } from './types.ts';
 import { label } from './types.ts';
 import { can } from './auth.ts';
@@ -36,14 +38,14 @@ export function page(opts: PageOpts, body: ReturnType<typeof html>): Response {
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${opts.title} · Coveresy Ops</title>
-<link rel="stylesheet" href="/app.css">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/app.css?v=${CSS_VERSION}">
+<link rel="icon" href="/favicon.svg?v=${ASSET_VERSION}" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap">
 </head><body class="${u ? 'in' : 'out'}">
 ${u
     ? html`<header class="top">
-  <a class="brand" href="/"><img src="/logo.svg" alt="Coveresy"><span>Ops</span></a>
+  <a class="brand" href="/"><img src="/logo.svg?v=${ASSET_VERSION}" alt="Coveresy"><span>Ops</span></a>
   <button class="navtoggle" aria-label="Menu" onclick="document.body.classList.toggle('navopen')">&#9776;</button>
   <nav>${nav}</nav>
   <div class="who"><span>${u.name}</span><em>${label(u.role)}</em>
@@ -54,7 +56,12 @@ ${u
 </body></html>`;
 
   return new Response(render(doc), {
-    headers: { 'Content-Type': 'text/html; charset=utf-8', 'X-Content-Type-Options': 'nosniff' },
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'X-Content-Type-Options': 'nosniff',
+      // Pages carry record data and the asset version; never let one be reused.
+      'Cache-Control': 'private, no-store',
+    },
   });
 }
 

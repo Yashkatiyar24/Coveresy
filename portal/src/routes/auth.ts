@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { get, post } from '../router.ts';
 import { html } from '../html.ts';
+import { ASSET_VERSION } from '../brand.ts';
 import { page, flash, redirect } from '../ui.ts';
 import { audit } from '../audit.ts';
 import {
@@ -24,7 +25,7 @@ function secretsMissingPage(ctx: Ctx) {
 
   return page(
     { title: 'Server setup required' },
-    html`<div class="loginmark"><img src="/logo.svg" alt="Coveresy"></div>
+    html`<div class="loginmark"><img src="/logo.svg?v=${ASSET_VERSION}" alt="Coveresy"></div>
     <div class="card">
       <h1>Server setup required</h1>
       <p class="sub">The portal cannot start a session until these server-side secrets are configured. They are never shown to the browser.</p>
@@ -48,7 +49,7 @@ get('/login', async (ctx) => {
   const next = ctx.url.searchParams.get('next') ?? '/';
   return page(
     { title: 'Log in' },
-    html`<div class="loginmark"><img src="/logo.svg" alt="Coveresy"></div>
+    html`<div class="loginmark"><img src="/logo.svg?v=${ASSET_VERSION}" alt="Coveresy"></div>
     <div class="card">
       <h1>Operations portal</h1>
       <p class="sub">Internal access for the Coveresy operations team.</p>
@@ -70,7 +71,7 @@ get('/setup', async (ctx) => {
   if (await adminExists(ctx)) {
     return page(
       { title: 'Setup complete' },
-      html`<div class="loginmark"><img src="/logo.svg" alt="Coveresy"></div>
+      html`<div class="loginmark"><img src="/logo.svg?v=${ASSET_VERSION}" alt="Coveresy"></div>
       <div class="card">
         <h1>Setup already complete</h1>
         <p class="sub">An administrator account exists, so first-run setup is closed. Rotate or remove <code>COVERESY_SETUP_TOKEN</code> now.</p>
@@ -81,7 +82,7 @@ get('/setup', async (ctx) => {
   const err = ctx.url.searchParams.get('err');
   return page(
     { title: 'First administrator' },
-    html`<div class="loginmark"><img src="/logo.svg" alt="Coveresy"></div>
+    html`<div class="loginmark"><img src="/logo.svg?v=${ASSET_VERSION}" alt="Coveresy"></div>
     <div class="card">
       <h1>Create the first administrator</h1>
       <p class="sub">This runs once and is protected by the one-time setup token. There is no default password.</p>

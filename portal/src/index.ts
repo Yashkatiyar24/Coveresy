@@ -15,11 +15,19 @@ import './routes/masters.ts';
 import './routes/reports.ts';
 
 get('/app.css', () => new Response(CSS, {
-  headers: { 'Content-Type': 'text/css; charset=utf-8', 'Cache-Control': 'public, max-age=300' },
+  headers: {
+    'Content-Type': 'text/css; charset=utf-8',
+    'Cache-Control': 'public, max-age=31536000, immutable',
+  },
 }), { public: true });
 
+// Safe to cache hard: the page requests these with a ?v= content hash, so a
+// changed asset arrives on a new URL rather than waiting for a cache to lapse.
 const svg = (body: string) => () => new Response(body, {
-  headers: { 'Content-Type': 'image/svg+xml; charset=utf-8', 'Cache-Control': 'public, max-age=86400' },
+  headers: {
+    'Content-Type': 'image/svg+xml; charset=utf-8',
+    'Cache-Control': 'public, max-age=31536000, immutable',
+  },
 });
 
 get('/logo.svg', svg(LOGO_SVG), { public: true });
