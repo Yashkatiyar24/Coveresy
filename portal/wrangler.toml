@@ -1,0 +1,18 @@
+name = "coveresy-ops"
+main = "src/index.ts"
+compatibility_date = "2025-01-15"
+
+[vars]
+# Non-secret config. Secrets (COVERESY_SESSION_SECRET, COVERESY_SETUP_TOKEN)
+# are set with `wrangler secret put` and never live in this file.
+COVERESY_ENV = "development"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "coveresy-ops"
+database_id = "local-placeholder-replace-after-d1-create"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "DOCS"
+bucket_name = "coveresy-docs"

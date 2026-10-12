@@ -1,0 +1,4 @@
+# Copy to .dev.vars for local development. NEVER commit .dev.vars.
+# Generate with: openssl rand -hex 32
+COVERESY_SESSION_SECRET="replace-with-32-plus-random-chars"
+COVERESY_SETUP_TOKEN="replace-with-a-one-time-setup-token"

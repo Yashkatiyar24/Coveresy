@@ -1,0 +1,22 @@
+{
+  "name": "coveresy-ops",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "migrate:local": "wrangler d1 migrations apply coveresy-ops --local",
+    "migrate:remote": "wrangler d1 migrations apply coveresy-ops --remote",
+    "seed:local": "wrangler d1 execute coveresy-ops --local --file=./migrations/seed.sql",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test \"test/*.test.mjs\"",
+    "deploy": "wrangler deploy"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20261006.1",
+    "typescript": "^5.7.3",
+    "wrangler": "^4.0.0"
+  },
+  "dependencies": {
+    "zod": "^3.24.1"
+  }
+}
