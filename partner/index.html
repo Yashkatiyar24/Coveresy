@@ -11,35 +11,38 @@
     <link href="../assets/base_product_variables.a9f1ac119158.ffbe48.css" rel="stylesheet">
     <link href="../assets/account-manager-login.d450219d3d8e.d57137.css" rel="stylesheet">
     <style>
-        .bp-wrap{font-family:'Lato',sans-serif;color:#2b2f38}
-        .bp-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 24px;border-bottom:1px solid #e6e8eb}
-        .bp-header img{height:34px}
-        .bp-header a{color:#2f6fd6;text-decoration:none;font:600 15px/1 'Lato',sans-serif}
-        .bp-hero{background:#1a3b5d;color:#fff;padding:48px 24px;text-align:center}
-        .bp-hero h1{font:700 32px/1.25 'Lato',sans-serif;margin:0 0 12px}
-        .bp-hero p{max-width:720px;margin:0 auto;font:400 16px/1.7 'Lato',sans-serif;color:#dce4ee}
+        .bp-wrap{font-family:'Lato',sans-serif;color:#2b2f38;background:#fff}
+        .bp-brand{background:linear-gradient(225.39deg,rgb(60 40 110) 0,rgb(29 28 70) 100%);color:#fff}
+        .bp-header{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 24px;height:70px}
+        .bp-header img{width:150px;height:auto;display:block}
+        .bp-header a.bp-login{color:rgb(248 202 15);border:1px solid rgb(248 202 15);border-radius:4px;padding:7px 14px;text-decoration:none;font:600 14px/1.2 'Lato',sans-serif;white-space:nowrap}
+        .bp-hero{padding:46px 24px 54px;text-align:center}
+        .bp-hero h1{font:700 34px/1.25 'Lato',sans-serif;margin:0 0 14px}
+        .bp-hero h1 span{color:rgb(248 202 15)}
+        .bp-hero p{max-width:720px;margin:0 auto;font:400 16px/1.7 'Lato',sans-serif;color:#d8d4e8}
         .bp-main{max-width:1040px;margin:0 auto;padding:44px 24px 10px;display:flex;flex-wrap:wrap;gap:40px}
         .bp-why{flex:1 1 380px;min-width:300px}
         .bp-why h2{font:700 24px/1.3 'Lato',sans-serif;margin:0 0 20px}
         .bp-why ul{list-style:none;margin:0 0 28px;padding:0}
         .bp-why li{display:flex;gap:12px;margin-bottom:16px;font:400 15px/1.6 'Lato',sans-serif;color:#444}
-        .bp-why li img{width:22px;height:22px;flex:0 0 22px;margin-top:2px}
+        .bp-why li img{width:20px;height:20px;flex:0 0 20px;margin-top:3px}
         .bp-steps{background:#f5f7fa;border-radius:10px;padding:22px 24px}
         .bp-steps h3{font:700 17px/1.3 'Lato',sans-serif;margin:0 0 14px}
-        .bp-steps ol{margin:0;padding-left:20px;font:400 15px/1.9 'Lato',sans-serif;color:#555}
+        .bp-steps ol{margin:0;padding-left:22px;font:400 15px/1.9 'Lato',sans-serif;color:#555;list-style:decimal outside}
+        .bp-steps li{display:list-item;list-style:decimal outside}
         .bp-form-card{flex:1 1 380px;min-width:300px;align-self:flex-start;background:#fff;border:1px solid #e6e8eb;border-radius:12px;box-shadow:0 8px 28px rgba(0,0,0,.08);padding:30px 28px 24px}
         .bp-form-card h2{font:700 22px/1.2 'Lato',sans-serif;margin:0 0 6px}
         .bp-form-card .bp-sub{font:400 14px/1.6 'Lato',sans-serif;color:#667;margin:0 0 20px}
         .reg-input{display:block;width:100%;box-sizing:border-box;height:50px;padding:0 16px;margin-bottom:16px;border:1px solid #d9dde3;border-radius:6px;font:400 15px/1 'Lato',sans-serif;color:#2b2f38;outline:none;transition:border-color .15s}
         .reg-input::placeholder{color:#9aa0a6}
-        .reg-input:focus{border-color:#f47521}
+        .reg-input:focus{border-color:rgb(60 40 110)}
         .reg-gender{display:flex;align-items:center;gap:18px;margin-bottom:16px;flex-wrap:wrap}
         .reg-gender__label{color:#6b7280;font-size:15px;margin-right:4px}
         .reg-radio{display:inline-flex;align-items:center;gap:6px;color:#2b2f38;font-size:15px;cursor:pointer}
-        .reg-radio input{accent-color:#f47521;width:16px;height:16px;margin:0}
-        .reg-submit{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:56px;margin-top:6px;border:none;border-radius:6px;background:#f47521;color:#fff;font:700 18px/1 'Lato',sans-serif;cursor:pointer;transition:background .15s}
-        .reg-submit:hover{background:#e0651a}
-        .reg-submit[disabled]{background:#f3b689;cursor:default}
+        .reg-radio input{accent-color:rgb(60 40 110);width:16px;height:16px;margin:0}
+        .reg-submit{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:56px;margin-top:6px;border:none;border-radius:6px;background:rgb(248 202 15);color:rgb(60 40 110);font:700 18px/1 'Lato',sans-serif;letter-spacing:.3px;cursor:pointer;transition:filter .15s}
+        .reg-submit:hover{filter:brightness(.94)}
+        .reg-submit[disabled]{opacity:.6;cursor:default}
         .reg-tnc{text-align:center;font:400 13px/1.5 'Lato',sans-serif;color:#2b2f38;margin:14px 0 0}
         .reg-tnc a{color:#2f6fd6;text-decoration:none}
         .reg-error{color:#e03b3b;font:400 13px/1.5 'Lato',sans-serif;margin:8px 0 0;text-align:center}
@@ -47,37 +50,39 @@
         .bp-foot{max-width:1040px;margin:0 auto;padding:30px 24px 48px;font:400 12px/1.7 'Lato',sans-serif;color:#8a9099;text-align:center}
         .bp-foot a{color:#2f6fd6;text-decoration:none}
         .hide{display:none}
-        @media(max-width:640px){.bp-hero h1{font-size:26px}.bp-main{padding-top:30px;gap:28px}}
+        @media(max-width:640px){.bp-header{padding:0 16px}.bp-header img{width:120px}.bp-header a.bp-login{font-size:11px;padding:6px 9px}.bp-hero h1{font-size:26px}.bp-main{padding-top:30px;gap:28px}}
     </style>
 </head>
 
 <body>
     <div class="bp-wrap">
-        <div class="bp-header">
-            <a href="/"><img src="../assets/logo_coveresy.e46b04b06dee.7a8794.svg" alt="Coveresy"></a>
-            <a href="/">Already a partner? Log in</a>
-        </div>
+        <div class="bp-brand">
+            <div class="bp-header">
+                <a href="/"><img src="../assets/logo_coveresy.e46b04b06dee.7a8794.svg" alt="Coveresy"></a>
+                <a href="/" class="bp-login">ALREADY A PARTNER? LOG IN</a>
+            </div>
 
-        <div class="bp-hero">
-            <h1>Become a Coveresy Partner</h1>
+            <div class="bp-hero">
+                <h1>Become a <span>Coveresy Partner</span></h1>
             <p>Grow your insurance business with a digital platform built for financial professionals. Register as a
                 Coveresy partner to manage customer relationships, policy workflows and renewals in one place, with
                 access to insurance solutions through our authorised insurance partners.</p>
+            </div>
         </div>
 
         <div class="bp-main">
             <div class="bp-why">
                 <h2>Why partner with Coveresy</h2>
                 <ul>
-                    <li><img src="../assets/zero_investment.ec428139935d.9e4eb5.svg" alt=""><span>Zero investment to get
+                    <li><img src="../assets/TICK.841819c87274.78418a.svg" alt=""><span>Zero investment to get
                             started &mdash; simple, digital and partner-enabled onboarding.</span></li>
-                    <li><img src="../assets/sell_various.00424696ff67.d4d9c7.svg" alt=""><span>Access health, life, motor
+                    <li><img src="../assets/TICK.841819c87274.78418a.svg" alt=""><span>Access health, life, motor
                             and other insurance solutions through our authorised partners.</span></li>
-                    <li><img src="../assets/manage_renewals.857c04742c2c.bf2068.svg" alt=""><span>Manage renewals,
+                    <li><img src="../assets/TICK.841819c87274.78418a.svg" alt=""><span>Manage renewals,
                             policy workflows and customer servicing from one platform.</span></li>
-                    <li><img src="../assets/tracking_facility.66b60e1e3eef.e87077.svg" alt=""><span>Track your business
+                    <li><img src="../assets/TICK.841819c87274.78418a.svg" alt=""><span>Track your business
                             and earnings with built-in reporting.</span></li>
-                    <li><img src="../assets/get_in_touch.a9b47a20e29a.0f3874.svg" alt=""><span>Dedicated partner support
+                    <li><img src="../assets/TICK.841819c87274.78418a.svg" alt=""><span>Dedicated partner support
                             team through your onboarding and beyond.</span></li>
                 </ul>
                 <div class="bp-steps">
