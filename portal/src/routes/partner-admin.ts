@@ -15,7 +15,14 @@ const MISSING_STATUSES = ['pending', 'in_review', 'identified', 'rejected'] as c
 interface PartnerRow {
   id: string; agent_code: string; name: string; email: string; mobile: string;
   status: string; parent_id: string | null; parent_name: string | null; created_at: string;
+  created_via: string; created_note: string | null; last_login_at: string | null; login_count: number;
   quotes: number; issued: number; premium: number; agents: number; open_reports: number;
+}
+
+/** "never signed in" is the thing staff look for, so it gets said plainly. */
+function loginCell(r: { last_login_at: string | null; login_count: number }) {
+  if (!r.last_login_at) return html`<span class="muted">Never signed in</span>`;
+  return html`${r.last_login_at.slice(0, 16)}<br><small>${r.login_count} sign-in${r.login_count === 1 ? '' : 's'}</small>`;
 }
 
 get('/partners', async (ctx: Ctx) => {
@@ -26,7 +33,8 @@ get('/partners', async (ctx: Ctx) => {
 
   const { results } = await ctx.env.DB.prepare(
     `SELECT pa.id, pa.agent_code, pa.name, pa.email, pa.mobile, pa.status, pa.parent_id,
-            parent.name AS parent_name, pa.created_at,
+            parent.name AS parent_name, pa.created_at, pa.created_via, pa.created_note,
+            pa.last_login_at, pa.login_count,
             (SELECT COUNT(*) FROM quote_requests q WHERE q.partner_id = pa.id) AS quotes,
             (SELECT COUNT(*) FROM quote_requests q WHERE q.partner_id = pa.id AND q.stage = 'payment_done') AS issued,
             (SELECT COALESCE(SUM(q.total_premium),0) FROM quote_requests q WHERE q.partner_id = pa.id) AS premium,
@@ -44,12 +52,14 @@ get('/partners', async (ctx: Ctx) => {
     { quotes: 0, issued: 0, premium: 0 },
   );
   const principals = results.filter((r) => !r.parent_id).length;
+  const neverUsed = results.filter((r) => !r.last_login_at).length;
 
   return page({ title: 'Partners', user: ctx.user, ctx, active: '/partners', wide: true }, html`
     <h1>Partners</h1>
     ${flashFromUrl(ctx.url)}
     <div class="cards">
       <div class="card stat"><b>${results.length}</b><span>Partner logins</span></div>
+      <div class="card stat"><b>${neverUsed}</b><span>Never signed in</span></div>
       <div class="card stat"><b>${principals}</b><span>Principals</span></div>
       <div class="card stat"><b>${results.length - principals}</b><span>Sub-agents</span></div>
       <div class="card stat"><b>${totals.quotes}</b><span>Quote requests</span></div>
@@ -62,11 +72,13 @@ get('/partners', async (ctx: Ctx) => {
       ${q ? html`<a class="btn ghost" href="/partners">Clear</a>` : ''}
     </form>
     ${table(
-      ['Agent code', 'Partner', 'Reports to', 'Status', numh('Agents'), numh('Quotes'), numh('Issued'), numh('Premium'), numh('Open reports'), 'Joined'],
+      ['Agent code', 'Login', 'Issued by', 'Last sign-in', 'Status', numh('Agents'), numh('Quotes'), numh('Issued'), numh('Premium'), numh('Open reports'), 'Created'],
       results.map((r) => html`<tr>
         <td><a href="/partners/${r.id}">${r.agent_code}</a></td>
         <td>${r.name}<br><small>${r.email} · ${r.mobile}</small></td>
-        <td>${r.parent_name ?? '—'}</td>
+        <td>${r.created_via === 'partner' ? html`${r.parent_name ?? 'A partner'}<br><small>partner-created</small>`
+            : html`Coveresy staff<br><small>${r.created_note ?? 'issued directly'}</small>`}</td>
+        <td>${loginCell(r)}</td>
         <td>${badge(r.status)}</td>
         <td class="num">${r.agents}</td>
         <td class="num">${r.quotes}</td>
@@ -90,8 +102,8 @@ get('/partners/:id', async (ctx: Ctx) => {
 
   const [agents, quotes, missing, byProduct] = await Promise.all([
     ctx.env.DB.prepare(
-      `SELECT id, agent_code, name, email, mobile, status, created_at FROM partner_accounts
-        WHERE parent_id = ? ORDER BY created_at DESC`).bind(id).all(),
+      `SELECT id, agent_code, name, email, mobile, status, created_at, last_login_at, login_count
+         FROM partner_accounts WHERE parent_id = ? ORDER BY created_at DESC`).bind(id).all(),
     ctx.env.DB.prepare(
       `SELECT id, product, stage, customer_name, customer_phone, details, total_premium, created_at
          FROM quote_requests WHERE partner_id = ? ORDER BY created_at DESC LIMIT 200`).bind(id).all(),
@@ -117,7 +129,13 @@ get('/partners/:id', async (ctx: Ctx) => {
         <dt>Status</dt><dd>${badge(partner.status)}</dd>
         <dt>Type</dt><dd>${partner.agent_type}</dd>
         <dt>Reports to</dt><dd>${partner.parent_name ?? 'Principal partner'}</dd>
-        <dt>Joined</dt><dd>${(partner.created_at ?? '').slice(0, 10)}</dd>
+        <dt>Login issued by</dt><dd>${partner.created_via === 'partner'
+          ? `${partner.parent_name ?? 'A partner'} (partner-created)`
+          : `Coveresy staff${partner.created_note ? ` · ${partner.created_note}` : ''}`}</dd>
+        <dt>Last sign-in</dt><dd>${partner.last_login_at
+          ? `${partner.last_login_at} · ${partner.login_count} sign-in${Number(partner.login_count) === 1 ? '' : 's'}`
+          : 'Never signed in'}</dd>
+        <dt>Created</dt><dd>${(partner.created_at ?? '').slice(0, 10)}</dd>
       </dl>
     </div>
 
@@ -130,12 +148,13 @@ get('/partners/:id', async (ctx: Ctx) => {
       </tr>`))}
 
     <h2>Agents under this partner</h2>
-    ${table(['Agent code', 'Name', 'Contact', 'Status', 'Joined'],
+    ${table(['Agent code', 'Name', 'Contact', 'Status', 'Last sign-in', 'Created'],
       agents.results.map((a: any) => html`<tr>
         <td><a href="/partners/${a.id}">${a.agent_code}</a></td>
         <td>${a.name}</td>
         <td>${a.email} · ${a.mobile}</td>
         <td>${badge(a.status)}</td>
+        <td>${loginCell(a)}</td>
         <td>${(a.created_at ?? '').slice(0, 10)}</td>
       </tr>`), 'No agents added.')}
 

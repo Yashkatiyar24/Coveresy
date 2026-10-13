@@ -22,9 +22,10 @@ const guard = (ctx: Ctx) => (authed(ctx) ? null : json(401, { error: 'Unauthoriz
 type Account = {
   id: string; agent_code: string; name: string; email: string; mobile: string;
   agent_type: string; status: string; parent_id: string | null;
+  created_via: string; last_login_at: string | null; login_count: number;
 };
 
-const PUBLIC_COLUMNS = 'id, agent_code, name, email, mobile, agent_type, status, parent_id, created_at';
+const PUBLIC_COLUMNS = 'id, agent_code, name, email, mobile, agent_type, status, parent_id, created_at, created_via, last_login_at, login_count';
 
 post('/internal/partner/login', async (ctx: Ctx) => {
   const bad = guard(ctx); if (bad) return bad;
@@ -41,6 +42,11 @@ post('/internal/partner/login', async (ctx: Ctx) => {
   }
   if (row.status !== 'approved') return json(403, { error: `Account is ${row.status}` });
 
+  // Staff use this to tell a login that is in use from one that was never touched.
+  await ctx.env.DB.prepare(
+    "UPDATE partner_accounts SET last_login_at = datetime('now'), login_count = login_count + 1 WHERE id = ?",
+  ).bind(row.id).run();
+
   const { password_hash, ...account } = row;
   return json(200, { account });
 }, { public: true });
@@ -56,12 +62,15 @@ post('/internal/partner/accounts', async (ctx: Ctx) => {
   try {
     await ctx.env.DB.prepare(
       `INSERT INTO partner_accounts
-         (id, application_id, parent_id, agent_code, name, email, mobile, password_hash, agent_type, status)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+         (id, application_id, parent_id, agent_code, name, email, mobile, password_hash,
+          agent_type, status, created_via, created_note)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     ).bind(
       id, b.application_id ?? null, b.parent_id ?? null, code, b.name,
       b.email.trim().toLowerCase(), b.mobile, await hashPassword(b.password),
       b.agent_type ?? 'coveresy', b.status ?? 'approved',
+      // A login either came from staff or was added by a partner for their agent.
+      b.created_via ?? (b.parent_id ? 'partner' : 'staff'), b.created_note ?? null,
     ).run();
   } catch (e) {
     const msg = e instanceof Error ? e.message : '';

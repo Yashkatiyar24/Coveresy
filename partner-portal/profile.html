@@ -43,6 +43,7 @@
           <dt>Status</dt><dd><span class="tag done" id="p-status">—</span></dd>
           <dt>Reports to</dt><dd id="p-parent">—</dd>
           <dt>With Coveresy since</dt><dd id="p-since">—</dd>
+          <dt>Last sign-in</dt><dd id="p-login">—</dd>
         </dl>
         <p class="sub" style="margin:18px 0 0;padding-top:14px;border-top:1px solid var(--line)">
           To correct your name, email or mobile, contact partner support — these are on your onboarding record.
@@ -81,6 +82,7 @@ const err = document.getElementById('pw-err'), ok = document.getElementById('pw-
     set('p-type', account.agent_type); set('p-status', account.status);
     set('p-parent', account.parent_id ? 'A principal partner' : 'You are a principal partner');
     set('p-since', (account.created_at || '').slice(0, 10));
+    set('p-login', account.last_login_at ? `${account.last_login_at} · ${account.login_count} sign-ins` : 'This is your first');
     set('s-quotes', stats.quotes); set('s-issued', stats.issued);
     set('s-agents', stats.agents); set('s-reports', stats.open_reports);
   } catch (e) { err.textContent = e.message; err.classList.remove('hide'); }
