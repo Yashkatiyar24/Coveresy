@@ -2,16 +2,16 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
-      "source": "/ops",
-      "destination": "https://coveresy-ops-staging.coveresy.workers.dev/ops"
+      "source": "/admin",
+      "destination": "https://coveresy-ops-staging.coveresy.workers.dev/admin"
     },
     {
-      "source": "/ops/",
-      "destination": "https://coveresy-ops-staging.coveresy.workers.dev/ops/"
+      "source": "/admin/",
+      "destination": "https://coveresy-ops-staging.coveresy.workers.dev/admin/"
     },
     {
-      "source": "/ops/:path*",
-      "destination": "https://coveresy-ops-staging.coveresy.workers.dev/ops/:path*"
+      "source": "/admin/:path*",
+      "destination": "https://coveresy-ops-staging.coveresy.workers.dev/admin/:path*"
     }
   ]
 }

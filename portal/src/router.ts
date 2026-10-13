@@ -77,7 +77,7 @@ function originOk(req: Request, url: URL, env: Env): boolean {
 export async function handle(req: Request, env: Env): Promise<Response> {
   const url = new URL(req.url);
 
-  // The portal may be mounted under a path (BASE_PATH="/ops"). Routes are
+  // The portal may be mounted under a path (BASE_PATH="/admin"). Routes are
   // declared without it; strip it here so there is exactly one place that
   // knows, and one place that puts it back (html.ts / redirect()).
   const base = (env.BASE_PATH ?? '').replace(/\/+$/, '');

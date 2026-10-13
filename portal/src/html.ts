@@ -22,7 +22,7 @@ function esc(v: unknown): string {
 }
 
 /**
- * Mount path, e.g. "/ops" when the portal is served at coveresy.com/ops.
+ * Mount path, e.g. "/admin" when the portal is served at coveresy.com/admin.
  * Deployment configuration, fixed for the life of the isolate, not per-request
  * state — the router sets it from env on every request with the same value.
  */

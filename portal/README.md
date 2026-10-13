@@ -35,7 +35,7 @@ normally.
 
 ## 2. Deploy to Cloudflare
 
-The portal is destined for **https://coveresy.com/ops**, on Anwar's Cloudflare
+The portal is destined for **https://coveresy.com/admin**, on Anwar's Cloudflare
 account. That path needs `coveresy.com` moved to Cloudflare DNS first —
 **read [DNS-MIGRATION.md](DNS-MIGRATION.md) before touching the domain**, because
 company email runs on Microsoft 365 and those records have to survive the move.
@@ -45,9 +45,9 @@ Until the domain is across, deploy without the routes (comment out both
 vars) and the Worker is reachable at its `workers.dev` URL. Nothing has to be
 redone when the domain lands.
 
-The mount path is configuration, not hardcoding: `BASE_PATH="/ops"` makes the
+The mount path is configuration, not hardcoding: `BASE_PATH="/admin"` makes the
 app emit and accept that prefix everywhere. It runs at the root in development
-and under `/ops` in production, and the full smoke suite passes against both.
+and under `/admin` in production, and the full smoke suite passes against both.
 
 
 Run these from `portal/`, signed in to the Coveresy Cloudflare account.

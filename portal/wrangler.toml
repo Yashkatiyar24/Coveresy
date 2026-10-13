@@ -11,18 +11,18 @@ COVERESY_ENV = "development"
 # The custom domain needs coveresy.com on Cloudflare DNS first — see
 # DNS-MIGRATION.md. Until then, comment out [[env.production.routes]] and the
 # Worker is reachable at its workers.dev URL.
-# Mounted at coveresy.com/ops. BASE_PATH is what makes the app emit and accept
+# Mounted at coveresy.com/admin. BASE_PATH is what makes the app emit and accept
 # that prefix; the routes below are what send those requests to this Worker.
 # Everything else on the domain continues to the Vercel origin untouched.
 [env.production]
-vars = { COVERESY_ENV = "production", BASE_PATH = "/ops", ALLOWED_ORIGINS = "www.coveresy.com,coveresy.com" }
+vars = { COVERESY_ENV = "production", BASE_PATH = "/admin", ALLOWED_ORIGINS = "www.coveresy.com,coveresy.com" }
 
 [[env.production.routes]]
-pattern = "coveresy.com/ops*"
+pattern = "coveresy.com/admin*"
 zone_name = "coveresy.com"
 
 [[env.production.routes]]
-pattern = "www.coveresy.com/ops*"
+pattern = "www.coveresy.com/admin*"
 zone_name = "coveresy.com"
 
 [[env.production.d1_databases]]
@@ -45,11 +45,11 @@ migrations_dir = "migrations"
 binding = "DOCS"
 bucket_name = "coveresy-docs"
 
-# Reached through the Vercel rewrite at https://www.coveresy.com/ops, so it
+# Reached through the Vercel rewrite at https://www.coveresy.com/admin, so it
 # serves under that same prefix: the links it emits must match the URL the
 # browser is on, or they would resolve against the marketing site.
 [env.staging]
-vars = { COVERESY_ENV = "production", BASE_PATH = "/ops", ALLOWED_ORIGINS = "www.coveresy.com,coveresy.com,coveresy.vercel.app" }
+vars = { COVERESY_ENV = "production", BASE_PATH = "/admin", ALLOWED_ORIGINS = "www.coveresy.com,coveresy.com,coveresy.vercel.app" }
 
 [[env.staging.d1_databases]]
 binding = "DB"

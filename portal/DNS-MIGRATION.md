@@ -1,4 +1,4 @@
-# Putting the portal on coveresy.com/ops
+# Putting the portal on coveresy.com/admin
 
 Captured from the live zone on 13 October 2026, before any change.
 
@@ -56,15 +56,15 @@ breaks mail signing:
 v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvnZcbI0tPBG5T+0pzUs7EolpuDR/NdoJOM8cmcmVAGxPH0EcY/htbyrTADqL04PGAbFkX/yQWd7vCYRjX9csC1N8zV+0zBgEKS9uUWH/xcgj3FDGxEsIZLIu+xthUH6PqfxcccHFJEc5ja2WxV6LtO6lyP6KV4e+9qLlmIO26Pa6hIVKeNMTySfKK9bYxo0zgXgNa9l3kVoFRb9eT+47xc/EBNRenvZ5I9Kun+6m6xMP6NY5c5bBzr7VJQOc7pbOSNPXkrf3xIQ0xt8nC8KXd0+87HRqmH4aba+Q635cFsNnDWZkHZoeStgA3ul7MtqB3SkPkdGgyZ2l9ze4A3jP6wIDAQAB
 ```
 
-## Why the website records must be proxied for a /ops path
+## Why the website records must be proxied for a /admin path
 
-A Worker route on a path (`coveresy.com/ops*`) only fires if that hostname is
+A Worker route on a path (`coveresy.com/admin*`) only fires if that hostname is
 **proxied** through Cloudflare — orange cloud. Cloudflare then sits in front of
-the whole domain: it answers `/ops*` from the Worker and passes everything else
+the whole domain: it answers `/admin*` from the Worker and passes everything else
 through to Vercel.
 
-That is the trade a path makes. `ops.coveresy.com` as a subdomain would leave
-Vercel on grey-cloud and completely untouched; `coveresy.com/ops` cannot.
+That is the trade a path makes. `admin.coveresy.com` as a subdomain would leave
+Vercel on grey-cloud and completely untouched; `coveresy.com/admin` cannot.
 
 Two settings matter once the apex and `www` are proxied:
 
@@ -137,11 +137,11 @@ Only once the site and email have been confirmed healthy on Cloudflare DNS:
 3. Load `https://www.coveresy.com`. If anything is wrong, set those two records
    back to **DNS only** and you are immediately back to Vercel serving directly.
 7. **Only then deploy the portal:** `npm run deploy:prod`. The routes in
-   `wrangler.toml` claim `coveresy.com/ops*` and `www.coveresy.com/ops*`;
+   `wrangler.toml` claim `coveresy.com/admin*` and `www.coveresy.com/admin*`;
    everything else on the domain keeps going to Vercel.
 8. **Verify the live portal**, which is the §20 acceptance run:
    ```bash
-   BASE=https://www.coveresy.com/ops SETUP_TOKEN=<token> ./test/smoke.sh
+   BASE=https://www.coveresy.com/admin SETUP_TOKEN=<token> ./test/smoke.sh
    ```
 
 ## Rollback
@@ -153,10 +153,10 @@ exists — verify before the switch, not after.
 
 ## Afterwards
 
-`coveresy.com/ops` is internal. Consider putting Cloudflare Access in front of
+`coveresy.com/admin` is internal. Consider putting Cloudflare Access in front of
 that path, so reaching the login page needs a company identity as well as a
 password. That is a Cloudflare dashboard setting and needs no change to this
 code.
 
-The portal's session cookie is scoped `Path=/ops`, so it is never sent with
+The portal's session cookie is scoped `Path=/admin`, so it is never sent with
 requests to the marketing site sharing the domain.

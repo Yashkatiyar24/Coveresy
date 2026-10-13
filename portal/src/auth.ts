@@ -132,7 +132,7 @@ export function readCookie(req: Request, name: string): string | null {
   return null;
 }
 
-/** Scope the cookie to the mount path: at coveresy.com/ops it is never sent
+/** Scope the cookie to the mount path: at coveresy.com/admin it is never sent
  *  to the marketing site on the same domain. */
 function cookiePath(env: Env): string {
   const base = (env.BASE_PATH ?? '').replace(/\/+$/, '');

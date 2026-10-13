@@ -5,7 +5,7 @@ export interface Env {
   COVERESY_ENV?: string;
   COVERESY_SESSION_SECRET?: string;
   COVERESY_SETUP_TOKEN?: string;
-  /** Mount path when served under a subpath, e.g. "/ops". Empty = root. */
+  /** Mount path when served under a subpath, e.g. "/admin". Empty = root. */
   BASE_PATH?: string;
   /**
    * Comma-separated public hostnames this Worker is served under when it sits
