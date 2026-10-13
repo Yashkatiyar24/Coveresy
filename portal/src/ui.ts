@@ -18,6 +18,7 @@ const NAV: Array<{ href: string; text: string; cap?: Parameters<typeof can>[1] }
   { href: '/applications', text: 'Policy MIS' },
   { href: '/verification', text: 'Verification Queue' },
   { href: '/payouts', text: 'Payouts' },
+  { href: '/partners', text: 'Partners' },
   { href: '/reports', text: 'Reports & Exports' },
   { href: '/masters', text: 'Master Data', cap: 'master_data' },
   { href: '/users', text: 'Users', cap: 'manage_users' },

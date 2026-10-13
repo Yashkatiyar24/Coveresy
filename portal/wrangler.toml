@@ -57,3 +57,12 @@ binding = "DB"
 database_name = "coveresy-ops"
 database_id = "5a6fbe35-e404-4dc0-bd2c-427d09c71af2"
 migrations_dir = "migrations"
+
+# Policy documents partners attach to a missing-policy report. R2 is not yet
+# enabled on this account, so the binding stays commented out; the report is
+# still recorded without the file (see routes/partner-portal.ts). To turn it
+# on: enable R2 in the dashboard, `wrangler r2 bucket create coveresy-docs`,
+# then uncomment.
+# [[env.staging.r2_buckets]]
+# binding = "DOCS"
+# bucket_name = "coveresy-docs"

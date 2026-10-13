@@ -143,3 +143,84 @@ get('/internal/partner/quote-requests', async (ctx: Ctx) => {
   ]);
   return json(200, { quotes: rows.results, totals });
 }, { public: true });
+
+get('/internal/partner/profile', async (ctx: Ctx) => {
+  const bad = guard(ctx); if (bad) return bad;
+  const id = ctx.url.searchParams.get('partner_id');
+  if (!id) return json(400, { error: 'partner_id is required' });
+
+  const [account, stats] = await Promise.all([
+    ctx.env.DB.prepare(`SELECT ${PUBLIC_COLUMNS} FROM partner_accounts WHERE id = ?`).bind(id).first<Account>(),
+    ctx.env.DB.prepare(
+      `SELECT COUNT(*) AS quotes,
+              COALESCE(SUM(stage='payment_done'), 0) AS issued,
+              (SELECT COUNT(*) FROM partner_accounts WHERE parent_id = ?) AS agents,
+              (SELECT COUNT(*) FROM missing_policy_requests WHERE partner_id = ? AND status IN ('pending','in_review')) AS open_reports
+         FROM quote_requests WHERE partner_id = ?`,
+    ).bind(id, id, id).first(),
+  ]);
+  if (!account) return json(404, { error: 'No such account' });
+  return json(200, { account, stats });
+}, { public: true });
+
+post('/internal/partner/password', async (ctx: Ctx) => {
+  const bad = guard(ctx); if (bad) return bad;
+  const { partner_id, current_password, new_password } =
+    await ctx.req.json<{ partner_id?: string; current_password?: string; new_password?: string }>();
+  if (!partner_id || !current_password || !new_password) return json(400, { error: 'Missing fields' });
+
+  const row = await ctx.env.DB.prepare('SELECT password_hash FROM partner_accounts WHERE id = ?')
+    .bind(partner_id).first<{ password_hash: string }>();
+  if (!row || !(await verifyPassword(current_password, row.password_hash))) {
+    return json(401, { error: 'Your current password is not right' });
+  }
+  await ctx.env.DB.prepare('UPDATE partner_accounts SET password_hash = ? WHERE id = ?')
+    .bind(await hashPassword(new_password), partner_id).run();
+  return json(200, { ok: true });
+}, { public: true });
+
+post('/internal/partner/missing-policies', async (ctx: Ctx) => {
+  const bad = guard(ctx); if (bad) return bad;
+  const b = await ctx.req.json<Record<string, string | undefined>>();
+  for (const f of ['partner_id', 'policy_number', 'issue_month', 'product']) {
+    if (!b[f]) return json(400, { error: `Missing field: ${f}` });
+  }
+
+  // The document is optional, and R2 may not be enabled on the account; a
+  // report is still worth recording without it.
+  let key: string | null = null;
+  if (b.document_base64 && ctx.env.DOCS) {
+    const bytes = Uint8Array.from(atob(b.document_base64), (c) => c.charCodeAt(0));
+    key = `missing-policies/${b.partner_id}/${randomId('mpd_')}`;
+    await ctx.env.DOCS.put(key, bytes, {
+      httpMetadata: { contentType: b.document_type || 'application/octet-stream' },
+    });
+  }
+
+  const id = randomId('mp_');
+  try {
+    await ctx.env.DB.prepare(
+      `INSERT INTO missing_policy_requests
+         (id, partner_id, policy_number, issue_month, product, comment, start_date, document_key, document_name)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    ).bind(id, b.partner_id, b.policy_number, b.issue_month, b.product,
+           b.comment ?? null, b.start_date ?? null, key, b.document_name ?? null).run();
+  } catch (e) {
+    const msg = e instanceof Error ? e.message : '';
+    if (msg.includes('CHECK') || msg.includes('FOREIGN KEY')) return json(400, { error: 'Invalid product or partner' });
+    throw e;
+  }
+  return json(201, { id, status: 'pending', document_stored: key !== null });
+}, { public: true });
+
+get('/internal/partner/missing-policies', async (ctx: Ctx) => {
+  const bad = guard(ctx); if (bad) return bad;
+  const id = ctx.url.searchParams.get('partner_id');
+  if (!id) return json(400, { error: 'partner_id is required' });
+  const { results } = await ctx.env.DB.prepare(
+    `SELECT id, policy_number, issue_month, product, comment, start_date, document_name,
+            status, staff_note, resolved_at, created_at
+       FROM missing_policy_requests WHERE partner_id = ? ORDER BY created_at DESC LIMIT 200`,
+  ).bind(id).all();
+  return json(200, { requests: results });
+}, { public: true });

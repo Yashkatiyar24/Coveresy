@@ -276,3 +276,57 @@ def create_agent(body: NewAgent, partner: dict = Depends(current_partner)) -> di
     if status != 201:
         raise HTTPException(502, data.get("error", "Could not create the agent."))
     return data
+
+
+class PasswordChange(BaseModel):
+    current_password: str = Field(min_length=1, max_length=200)
+    new_password: str = Field(min_length=8, max_length=200)
+
+
+class MissingPolicy(BaseModel):
+    policy_number: str = Field(min_length=3, max_length=60)
+    issue_month: str = Field(pattern=r"^\d{4}-(0[1-9]|1[0-2])$")
+    product: Literal["car", "bike", "health", "life"]
+    comment: str | None = Field(default=None, max_length=500)
+    start_date: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}-\d{2}$")
+    document_name: str | None = Field(default=None, max_length=200)
+    document_type: str | None = Field(default=None, max_length=100)
+    # Base64 of the policy PDF/image. Vercel caps a request body at ~4.5 MB, so
+    # the page refuses anything larger before it gets here.
+    document_base64: str | None = Field(default=None, max_length=4_000_000)
+
+
+@app.get("/api/partner/profile")
+def partner_profile(partner: dict = Depends(current_partner)) -> dict:
+    status, data = call_worker("GET", "partner/profile", params={"partner_id": partner["id"]})
+    if status != 200:
+        raise HTTPException(502 if status != 404 else 404, data.get("error", "Could not load your profile."))
+    return data
+
+
+@app.post("/api/partner/password")
+def change_password(body: PasswordChange, partner: dict = Depends(current_partner)) -> dict:
+    status, data = call_worker("POST", "partner/password",
+                               body.model_dump() | {"partner_id": partner["id"]})
+    if status == 401:
+        raise HTTPException(401, data.get("error", "Your current password is not right"))
+    if status != 200:
+        raise HTTPException(502, data.get("error", "Could not change your password."))
+    return {"ok": True}
+
+
+@app.post("/api/partner/missing-policies", status_code=201)
+def report_missing_policy(body: MissingPolicy, partner: dict = Depends(current_partner)) -> dict:
+    status, data = call_worker("POST", "partner/missing-policies",
+                               body.model_dump() | {"partner_id": partner["id"]})
+    if status != 201:
+        raise HTTPException(400 if status == 400 else 502, data.get("error", "Could not file the report."))
+    return data
+
+
+@app.get("/api/partner/missing-policies")
+def list_missing_policies(partner: dict = Depends(current_partner)) -> dict:
+    status, data = call_worker("GET", "partner/missing-policies", params={"partner_id": partner["id"]})
+    if status != 200:
+        raise HTTPException(502, data.get("error", "Could not load your reports."))
+    return data

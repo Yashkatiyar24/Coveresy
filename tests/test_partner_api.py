@@ -120,6 +120,30 @@ def test_portal_endpoints_require_a_session():
             assert getattr(c, method)(path).status_code == 401, path
         assert c.post("/api/partner/quotes", json={"product": "life"}).status_code == 401
 
+def test_missing_policy_input_is_validated():
+    index.SESSION_SECRET = "unit-test-secret"
+    ok = index.MissingPolicy(policy_number="POL-1", issue_month="2026-10", product="car")
+    assert ok.issue_month == "2026-10"
+    for bad in ({"issue_month": "Oct-2026"}, {"issue_month": "2026-13"}, {"product": "boat"},
+                {"policy_number": "x"}, {"start_date": "02-10-2026"}):
+        try:
+            index.MissingPolicy(**({"policy_number": "POL-1", "issue_month": "2026-10",
+                                    "product": "car"} | bad))
+        except Exception:
+            continue
+        raise AssertionError(f"accepted bad input: {bad}")
+
+
+def test_new_portal_endpoints_require_a_session():
+    index.SESSION_SECRET = "unit-test-secret"
+    with TestClient(index.app) as c:
+        assert c.get("/api/partner/profile").status_code == 401
+        assert c.get("/api/partner/missing-policies").status_code == 401
+        assert c.post("/api/partner/missing-policies",
+                      json={"policy_number": "POL-1", "issue_month": "2026-10", "product": "car"}).status_code == 401
+        assert c.post("/api/partner/password",
+                      json={"current_password": "a", "new_password": "abcdefgh"}).status_code == 401
+
 
 if __name__ == "__main__":
     test_apply_forwards_to_sink()
@@ -127,4 +151,6 @@ if __name__ == "__main__":
     test_unconfigured_sink_is_not_silent()
     test_session_round_trip_and_tampering()
     test_portal_endpoints_require_a_session()
+    test_missing_policy_input_is_validated()
+    test_new_portal_endpoints_require_a_session()
     print("ok")

@@ -15,6 +15,7 @@ import './routes/masters.ts';
 import './routes/reports.ts';
 import './routes/partners.ts';
 import './routes/partner-portal.ts';
+import './routes/partner-admin.ts';
 
 get('/app.css', () => new Response(CSS, {
   headers: {
