@@ -45,11 +45,12 @@ migrations_dir = "migrations"
 binding = "DOCS"
 bucket_name = "coveresy-docs"
 
-# Reached through the Vercel rewrite at https://www.coveresy.com/admin, so it
-# serves under that same prefix: the links it emits must match the URL the
-# browser is on, or they would resolve against the marketing site.
+# Served at the root of https://admin.coveresy.com through a Vercel rewrite, so
+# no mount path: the portal owns that hostname outright. ALLOWED_ORIGINS lists
+# the public hostnames the browser sees, because behind the proxy the Worker's
+# own req.url carries the origin host instead.
 [env.staging]
-vars = { COVERESY_ENV = "production", BASE_PATH = "/admin", ALLOWED_ORIGINS = "www.coveresy.com,coveresy.com,coveresy.vercel.app" }
+vars = { COVERESY_ENV = "production", ALLOWED_ORIGINS = "admin.coveresy.com,www.coveresy.com,coveresy.com" }
 
 [[env.staging.d1_databases]]
 binding = "DB"

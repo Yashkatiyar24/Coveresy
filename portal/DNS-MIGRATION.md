@@ -1,4 +1,4 @@
-# Putting the portal on coveresy.com/admin
+# Putting the portal on admin.coveresy.com
 
 Captured from the live zone on 13 October 2026, before any change.
 
@@ -58,13 +58,13 @@ v=DKIM1; k=rsa; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAvnZcbI0tPBG5T+0pzU
 
 ## Why the website records must be proxied for a /admin path
 
-A Worker route on a path (`coveresy.com/admin*`) only fires if that hostname is
+A Worker route on a path (`admin.coveresy.com*`) only fires if that hostname is
 **proxied** through Cloudflare — orange cloud. Cloudflare then sits in front of
 the whole domain: it answers `/admin*` from the Worker and passes everything else
 through to Vercel.
 
 That is the trade a path makes. `admin.coveresy.com` as a subdomain would leave
-Vercel on grey-cloud and completely untouched; `coveresy.com/admin` cannot.
+Vercel on grey-cloud and completely untouched; `admin.coveresy.com` cannot.
 
 Two settings matter once the apex and `www` are proxied:
 
@@ -137,11 +137,11 @@ Only once the site and email have been confirmed healthy on Cloudflare DNS:
 3. Load `https://www.coveresy.com`. If anything is wrong, set those two records
    back to **DNS only** and you are immediately back to Vercel serving directly.
 7. **Only then deploy the portal:** `npm run deploy:prod`. The routes in
-   `wrangler.toml` claim `coveresy.com/admin*` and `www.coveresy.com/admin*`;
+   `wrangler.toml` claim `admin.coveresy.com*` and `www.admin.coveresy.com*`;
    everything else on the domain keeps going to Vercel.
 8. **Verify the live portal**, which is the §20 acceptance run:
    ```bash
-   BASE=https://www.coveresy.com/admin SETUP_TOKEN=<token> ./test/smoke.sh
+   BASE=https://admin.coveresy.com SETUP_TOKEN=<token> ./test/smoke.sh
    ```
 
 ## Rollback
@@ -153,7 +153,7 @@ exists — verify before the switch, not after.
 
 ## Afterwards
 
-`coveresy.com/admin` is internal. Consider putting Cloudflare Access in front of
+`admin.coveresy.com` is internal. Consider putting Cloudflare Access in front of
 that path, so reaching the login page needs a company identity as well as a
 password. That is a Cloudflare dashboard setting and needs no change to this
 code.

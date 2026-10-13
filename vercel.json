@@ -1,17 +1,17 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "rewrites": [
+  "routes": [
     {
-      "source": "/admin",
-      "destination": "https://coveresy-ops-staging.coveresy.workers.dev/admin"
+      "src": "^/admin(?:/(.*))?$",
+      "has": [{ "type": "host", "value": "www.coveresy.com" }],
+      "status": 307,
+      "headers": { "Location": "https://admin.coveresy.com/$1" }
     },
     {
-      "source": "/admin/",
-      "destination": "https://coveresy-ops-staging.coveresy.workers.dev/admin/"
+      "src": "^/(.*)$",
+      "has": [{ "type": "host", "value": "admin.coveresy.com" }],
+      "dest": "https://coveresy-ops-staging.coveresy.workers.dev/$1"
     },
-    {
-      "source": "/admin/:path*",
-      "destination": "https://coveresy-ops-staging.coveresy.workers.dev/admin/:path*"
-    }
+    { "handle": "filesystem" }
   ]
 }

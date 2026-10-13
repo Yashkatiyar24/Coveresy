@@ -35,7 +35,7 @@ normally.
 
 ## 2. Deploy to Cloudflare
 
-The portal is destined for **https://coveresy.com/admin**, on Anwar's Cloudflare
+The portal is destined for **https://admin.coveresy.com**, on Anwar's Cloudflare
 account. That path needs `coveresy.com` moved to Cloudflare DNS first —
 **read [DNS-MIGRATION.md](DNS-MIGRATION.md) before touching the domain**, because
 company email runs on Microsoft 365 and those records have to survive the move.
