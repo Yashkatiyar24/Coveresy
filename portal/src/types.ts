@@ -7,6 +7,13 @@ export interface Env {
   COVERESY_SETUP_TOKEN?: string;
   /** Mount path when served under a subpath, e.g. "/ops". Empty = root. */
   BASE_PATH?: string;
+  /**
+   * Comma-separated public hostnames this Worker is served under when it sits
+   * behind a reverse proxy. The proxy forwards the browser's Origin, but the
+   * Worker's own req.url carries the origin host, so the CSRF check needs to
+   * know which public hosts are legitimately ours.
+   */
+  ALLOWED_ORIGINS?: string;
 }
 
 export type Role = 'admin' | 'operator' | 'viewer';

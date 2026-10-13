@@ -15,7 +15,7 @@ COVERESY_ENV = "development"
 # that prefix; the routes below are what send those requests to this Worker.
 # Everything else on the domain continues to the Vercel origin untouched.
 [env.production]
-vars = { COVERESY_ENV = "production", BASE_PATH = "/ops" }
+vars = { COVERESY_ENV = "production", BASE_PATH = "/ops", ALLOWED_ORIGINS = "www.coveresy.com,coveresy.com" }
 
 [[env.production.routes]]
 pattern = "coveresy.com/ops*"
@@ -49,7 +49,7 @@ bucket_name = "coveresy-docs"
 # serves under that same prefix: the links it emits must match the URL the
 # browser is on, or they would resolve against the marketing site.
 [env.staging]
-vars = { COVERESY_ENV = "production", BASE_PATH = "/ops" }
+vars = { COVERESY_ENV = "production", BASE_PATH = "/ops", ALLOWED_ORIGINS = "www.coveresy.com,coveresy.com,coveresy.vercel.app" }
 
 [[env.staging.d1_databases]]
 binding = "DB"

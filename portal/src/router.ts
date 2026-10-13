@@ -36,13 +36,41 @@ function match(path: string, pattern: string): Record<string, string> | null {
   return params;
 }
 
-/** CSRF: same-origin check on every state-changing request (§17). */
-function originOk(req: Request, url: URL): boolean {
+/**
+ * CSRF: same-origin check on every state-changing request (§17).
+ *
+ * Behind a reverse proxy the browser's Origin is the public host while
+ * req.url carries the origin host, so an explicit allowlist of public hosts is
+ * consulted as well. The allowlist is configuration, never a request header —
+ * X-Forwarded-Host is attacker-controlled and would defeat the check.
+ */
+function originOk(req: Request, url: URL, env: Env): boolean {
   if (req.method === 'GET' || req.method === 'HEAD') return true;
+
+  const allowed = new Set([url.host]);
+  for (const h of (env.ALLOWED_ORIGINS ?? '').split(',')) {
+    const host = h.trim();
+    if (host) allowed.add(host);
+  }
+
+  const hostOf = (value: string) => {
+    try {
+      return new URL(value).host;
+    } catch {
+      return null;
+    }
+  };
+
   const origin = req.headers.get('Origin');
-  if (origin) return new URL(origin).host === url.host;
+  if (origin) {
+    const h = hostOf(origin);
+    return h !== null && allowed.has(h);
+  }
   const referer = req.headers.get('Referer');
-  if (referer) return new URL(referer).host === url.host;
+  if (referer) {
+    const h = hostOf(referer);
+    return h !== null && allowed.has(h);
+  }
   return false; // no Origin and no Referer on a POST: refuse
 }
 
@@ -75,7 +103,7 @@ export async function handle(req: Request, env: Env): Promise<Response> {
     .sort((a, b) => Object.keys(a.params).length - Object.keys(b.params).length);
 
   for (const { r, params } of candidates) {
-    if (!originOk(req, url)) {
+    if (!originOk(req, url, env)) {
       return new Response('Cross-origin request refused', { status: 403 });
     }
 
