@@ -51,8 +51,8 @@ get('/login', async (ctx) => {
     { title: 'Log in' },
     html`<div class="loginmark"><img src="/logo.svg?v=${ASSET_VERSION}" alt="Coveresy"></div>
     <div class="card">
-      <h1>Operations portal</h1>
-      <p class="sub">Internal access for the Coveresy operations team.</p>
+      <h1>Admin portal</h1>
+      <p class="sub">Internal access for the Coveresy team.</p>
       ${err ? html`<div class="flash err">${err}</div>` : ''}
       <form method="post" action="/auth/login">
         <input type="hidden" name="next" value="${next}">

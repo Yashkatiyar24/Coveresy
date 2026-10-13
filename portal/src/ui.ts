@@ -37,7 +37,7 @@ export function page(opts: PageOpts, body: ReturnType<typeof html>): Response {
   const doc = html`<!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${opts.title} · Coveresy Ops</title>
+<title>${opts.title} · Coveresy Admin</title>
 <link rel="stylesheet" href="/app.css?v=${CSS_VERSION}">
 <link rel="icon" href="/favicon.svg?v=${ASSET_VERSION}" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -45,7 +45,7 @@ export function page(opts: PageOpts, body: ReturnType<typeof html>): Response {
 </head><body class="${u ? 'in' : 'out'}">
 ${u
     ? html`<header class="top">
-  <a class="brand" href="/"><img src="/logo.svg?v=${ASSET_VERSION}" alt="Coveresy"><span>Ops</span></a>
+  <a class="brand" href="/"><img src="/logo.svg?v=${ASSET_VERSION}" alt="Coveresy"><span>Admin</span></a>
   <button class="navtoggle" aria-label="Menu" onclick="document.body.classList.toggle('navopen')">&#9776;</button>
   <nav>${nav}</nav>
   <div class="who"><span>${u.name}</span><em>${label(u.role)}</em>
