@@ -20,6 +20,10 @@ class Sink(BaseHTTPRequestHandler):
             return self.reply(401, {"error": "Unauthorized"})
         if not self.headers.get("Origin"):  # the Worker's CSRF guard needs one
             return self.reply(403, {"error": "Cross-origin request refused"})
+        if "urllib" in (self.headers.get("User-Agent") or ""):  # Cloudflare 1010
+            return self.reply(403, {"error": "banned client signature"})
+        if not body:
+            return self.reply(400, {"error": "Missing field"})
         if body["pan"] in seen_pans:
             return self.reply(409, {"error": "Already applied"})
         seen_pans.add(body["pan"])
@@ -72,6 +76,11 @@ def test_apply_forwards_to_sink():
         assert len(received) == 1  # nothing invalid ever reached the sink
 
 
+def test_health_reports_sink_state():
+    with TestClient(index.app) as c:
+        assert c.get("/api/partners/health").json()["sink"] == "reachable, credentials accepted"
+
+
 def test_unconfigured_sink_is_not_silent():
     index.SINK_URL = ""
     with TestClient(index.app) as c:
@@ -80,5 +89,6 @@ def test_unconfigured_sink_is_not_silent():
 
 if __name__ == "__main__":
     test_apply_forwards_to_sink()
+    test_health_reports_sink_state()
     test_unconfigured_sink_is_not_silent()
     print("ok")
