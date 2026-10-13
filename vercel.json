@@ -3,15 +3,33 @@
   "routes": [
     {
       "src": "^/admin(?:/(.*))?$",
-      "has": [{ "type": "host", "value": "www.coveresy.com" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "www.coveresy.com"
+        }
+      ],
       "status": 307,
-      "headers": { "Location": "https://admin.coveresy.com/$1" }
+      "headers": {
+        "Location": "https://admin.coveresy.com/$1"
+      }
     },
     {
       "src": "^/(.*)$",
-      "has": [{ "type": "host", "value": "admin.coveresy.com" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "admin.coveresy.com"
+        }
+      ],
       "dest": "https://coveresy-ops-staging.coveresy.workers.dev/$1"
     },
-    { "handle": "filesystem" }
+    {
+      "src": "^/api/(.*)$",
+      "dest": "/api/index"
+    },
+    {
+      "handle": "filesystem"
+    }
   ]
 }

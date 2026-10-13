@@ -13,6 +13,7 @@ import './routes/documents.ts';
 import './routes/payouts.ts';
 import './routes/masters.ts';
 import './routes/reports.ts';
+import './routes/partners.ts';
 
 get('/app.css', () => new Response(CSS, {
   headers: {

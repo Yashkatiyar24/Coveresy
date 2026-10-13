@@ -1,0 +1,9 @@
+# The portal is served by the Cloudflare Worker (see vercel.json), not Vercel.
+portal
+tests
+docs
+.jetro
+data
+projects
+# Internal docs must not be publicly downloadable from the site root.
+*.pdf

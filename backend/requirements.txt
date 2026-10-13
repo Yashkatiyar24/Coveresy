@@ -1,2 +1,0 @@
-fastapi[standard]==0.143.0
-pydantic[email]==2.14.1

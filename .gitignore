@@ -3,3 +3,5 @@
 assets/partners/
 .vercel
 .env*
+__pycache__/
+*.pyc

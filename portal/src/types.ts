@@ -14,6 +14,8 @@ export interface Env {
    * know which public hosts are legitimately ours.
    */
   ALLOWED_ORIGINS?: string;
+  /** Shared bearer secret the public partner API presents to the sink route. */
+  PARTNER_SINK_SECRET?: string;
 }
 
 export type Role = 'admin' | 'operator' | 'viewer';
