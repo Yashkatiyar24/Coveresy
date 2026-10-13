@@ -195,14 +195,17 @@ post('/internal/partner/missing-policies', async (ctx: Ctx) => {
     if (!b[f]) return json(400, { error: `Missing field: ${f}` });
   }
 
-  // The document is optional, and R2 may not be enabled on the account; a
-  // report is still worth recording without it.
+  // The document is optional, and storage may not be bound; a report is still
+  // worth recording without it.
   let key: string | null = null;
-  if (b.document_base64 && ctx.env.DOCS) {
+  if (b.document_base64 && ctx.env.DOCS_KV) {
     const bytes = Uint8Array.from(atob(b.document_base64), (c) => c.charCodeAt(0));
     key = `missing-policies/${b.partner_id}/${randomId('mpd_')}`;
-    await ctx.env.DOCS.put(key, bytes, {
-      httpMetadata: { contentType: b.document_type || 'application/octet-stream' },
+    await ctx.env.DOCS_KV.put(key, bytes, {
+      metadata: {
+        contentType: b.document_type || 'application/octet-stream',
+        name: b.document_name ?? 'document',
+      },
     });
   }
 

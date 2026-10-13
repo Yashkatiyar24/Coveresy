@@ -216,13 +216,15 @@ get('/partners/missing/:id/document', async (ctx: Ctx) => {
     'SELECT document_key, document_name FROM missing_policy_requests WHERE id = ?',
   ).bind(ctx.params.id).first<{ document_key: string | null; document_name: string | null }>();
   if (!row?.document_key) return flash('/partners', 'err', 'No document on that report');
-  if (!ctx.env.DOCS) return flash('/partners', 'err', 'Document storage is not enabled');
+  if (!ctx.env.DOCS_KV) return flash('/partners', 'err', 'Document storage is not enabled');
 
-  const object = await ctx.env.DOCS.get(row.document_key);
-  if (!object) return flash('/partners', 'err', 'Document is no longer stored');
-  return new Response(object.body, {
+  const object = await ctx.env.DOCS_KV.getWithMetadata<{ contentType?: string }>(
+    row.document_key, { type: 'arrayBuffer' },
+  );
+  if (!object.value) return flash('/partners', 'err', 'Document is no longer stored');
+  return new Response(object.value, {
     headers: {
-      'Content-Type': object.httpMetadata?.contentType ?? 'application/octet-stream',
+      'Content-Type': object.metadata?.contentType ?? 'application/octet-stream',
       'Content-Disposition': `attachment; filename="${(row.document_name ?? 'document').replace(/"/g, '')}"`,
       'Cache-Control': 'private, no-store',
     },

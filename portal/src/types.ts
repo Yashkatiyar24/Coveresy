@@ -2,6 +2,8 @@ export interface Env {
   DB: D1Database;
   /** Absent until R2 is enabled on the account; document routes check first. */
   DOCS?: R2Bucket;
+  /** Missing-policy attachments. KV, because R2 needs a card on file. */
+  DOCS_KV?: KVNamespace;
   COVERESY_ENV?: string;
   COVERESY_SESSION_SECRET?: string;
   COVERESY_SETUP_TOKEN?: string;

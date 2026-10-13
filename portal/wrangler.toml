@@ -35,6 +35,10 @@ migrations_dir = "migrations"
 binding = "DOCS"
 bucket_name = "coveresy-docs"
 
+[[env.production.kv_namespaces]]
+binding = "DOCS_KV"
+id = "8eecb25efec64de4acfe169030a67f66"
+
 [[d1_databases]]
 binding = "DB"
 database_name = "coveresy-ops"
@@ -44,6 +48,10 @@ migrations_dir = "migrations"
 [[r2_buckets]]
 binding = "DOCS"
 bucket_name = "coveresy-docs"
+
+[[kv_namespaces]]
+binding = "DOCS_KV"
+id = "8eecb25efec64de4acfe169030a67f66"
 
 # Served at the root of https://admin.coveresy.com through a Vercel rewrite, so
 # no mount path: the portal owns that hostname outright. ALLOWED_ORIGINS lists
@@ -58,11 +66,9 @@ database_name = "coveresy-ops"
 database_id = "5a6fbe35-e404-4dc0-bd2c-427d09c71af2"
 migrations_dir = "migrations"
 
-# Policy documents partners attach to a missing-policy report. R2 is not yet
-# enabled on this account, so the binding stays commented out; the report is
-# still recorded without the file (see routes/partner-portal.ts). To turn it
-# on: enable R2 in the dashboard, `wrangler r2 bucket create coveresy-docs`,
-# then uncomment.
-# [[env.staging.r2_buckets]]
-# binding = "DOCS"
-# bucket_name = "coveresy-docs"
+# Policy documents partners attach to a missing-policy report. R2 needs a card
+# on file even on its free tier, so these live in KV instead: free, and its
+# 25 MB per value is far above the 3 MB the upload page allows.
+[[env.staging.kv_namespaces]]
+binding = "DOCS_KV"
+id = "8eecb25efec64de4acfe169030a67f66"
