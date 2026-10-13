@@ -7,33 +7,40 @@
 <link href="../assets/css.1d997c.css" rel="stylesheet">
 <link href="portal.css" rel="stylesheet">
 <style>
-  .quote-head{text-align:center;margin:10px 0 26px}
-  .quote-head h1{font:300 34px/1.2 'Lato',sans-serif;margin:0}
-  #products{justify-content:center;border:none}
-  #products button{letter-spacing:2px;text-transform:uppercase;font-size:16px}
-  .journey{max-width:860px;margin:0 auto}
-  .journey .card{padding:26px 28px}
-  .actions{text-align:center;margin-top:24px}
-  .tnc{text-align:center;color:var(--muted);font-size:13px;margin-top:14px}
+  .layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:24px;align-items:start}
+  .aside{padding:22px 24px}
+  .aside h2{font:700 15px/1.3 'Lato',sans-serif;margin:0 0 14px}
+  .steps{list-style:none;margin:0;padding:0;counter-reset:s}
+  .steps li{counter-increment:s;position:relative;padding:0 0 18px 34px;color:var(--muted);font-size:14px}
+  .steps li::before{content:counter(s);position:absolute;left:0;top:-1px;width:23px;height:23px;border-radius:50%;
+    background:#f0edf9;color:var(--purple);font:700 12px/23px 'Lato',sans-serif;text-align:center}
+  .steps li:not(:last-child)::after{content:"";position:absolute;left:11px;top:25px;bottom:4px;width:1px;background:var(--line)}
+  .actions{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin-top:22px}
+  @media(max-width:980px){.layout{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div id="hdr"></div>
-<div class="wrap">
-  <div class="quote-head"><h1>Get Quotes instantly and sell quickly</h1></div>
+<div class="shell">
+  <div id="rail"></div>
+  <main class="main">
+  <div class="page-head">
+    <h1>Start a new quote</h1>
+    <p>Capture the cover your customer needs. We come back with options from our insurance partners.</p>
+  </div>
 
-  <div class="tabs" id="products">
+  <div class="seg" id="products" style="margin-bottom:20px">
     <button data-product="car" class="on">Car</button>
     <button data-product="bike">Bike</button>
     <button data-product="health">Health</button>
     <button data-product="life">Life</button>
   </div>
 
-  <form class="journey" id="form" novalidate>
-    <div class="card">
+  <div class="layout">
+  <form id="form" novalidate>
+    <div class="card pad">
       <div class="radios" id="motor-mode">
-        <label><input type="radio" name="mode" value="renew" checked><span>Renew</span></label>
-        <label><input type="radio" name="mode" value="new"><span>New</span></label>
+        <label><input type="radio" name="mode" value="renew" checked><span>Renewal</span></label>
+        <label><input type="radio" name="mode" value="new"><span>Brand new vehicle</span></label>
       </div>
 
       <!-- motor: car + bike -->
@@ -90,7 +97,8 @@
         </div>
       </div>
 
-      <hr style="border:none;border-top:1px solid var(--line);margin:20px 0">
+      <hr style="border:none;border-top:1px solid var(--line);margin:22px 0">
+      <h2 style="font:700 15px/1.3 'Lato',sans-serif;margin:0 0 14px">Who is this for?</h2>
       <div class="row">
         <label class="field"><span>Customer name</span><input type="text" name="customer_name" placeholder="Full name"></label>
         <label class="field"><span>Customer mobile</span>
@@ -99,13 +107,26 @@
     </div>
 
     <div class="actions">
-      <button class="btn" type="submit" style="min-width:220px;height:50px">Request quotes</button>
-      <p class="msg err hide" id="err"></p>
-      <p class="msg ok hide" id="ok"></p>
-      <p class="tnc">Our team prepares quotes from our authorised insurance partners and comes back to you.
-        By continuing you agree to the <a href="/terms/">T&amp;C</a>.</p>
+      <button class="btn" type="submit">Send to Coveresy</button>
+      <p class="msg err hide" id="err" style="margin:0"></p>
+      <p class="msg ok hide" id="ok" style="margin:0"></p>
     </div>
   </form>
+
+  <div class="card pad aside">
+    <h2>What happens next</h2>
+    <ol class="steps">
+      <li>You send us the cover details.</li>
+      <li>We collect options from our authorised insurance partners.</li>
+      <li>You get the quotes back and share them with your customer.</li>
+      <li>The request moves along your dashboard as it converts.</li>
+    </ol>
+    <p class="sub" style="margin:0;padding-top:14px;border-top:1px solid var(--line)">
+      No premium is shown here — pricing always comes from the insurer.
+    </p>
+  </div>
+  </div>
+  </main>
 </div>
 
 <script src="app.js"></script>
@@ -162,7 +183,7 @@ form.addEventListener('submit', async (e) => {
 });
 
 (async () => {
-  document.getElementById('hdr').innerHTML = await (await fetch('_header.html')).text();
+  document.getElementById('rail').outerHTML = await (await fetch('_header.html')).text();
   await requirePartner('quote');
   document.getElementById('products').addEventListener('click', (e) => {
     const b = e.target.closest('button'); if (!b) return;

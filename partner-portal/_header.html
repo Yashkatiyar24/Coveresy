@@ -1,16 +1,19 @@
-<div class="hdr">
-  <div style="display:flex;align-items:center;gap:28px">
-    <a href="index.html"><img src="../assets/logo_coveresy.e46b04b06dee.7a8794.svg" alt="Coveresy"
-       style="filter:brightness(0) saturate(100%) invert(14%) sepia(37%) saturate(2000%) hue-rotate(228deg)"></a>
-    <nav>
-      <a href="index.html" data-nav="dashboard">Policy Dashboard</a>
-      <a href="quote.html" data-nav="quote">Get Quotes</a>
-      <a href="users.html" data-nav="users">Manage Users</a>
-    </nav>
+<aside class="rail">
+  <a class="brand" href="index.html"><img src="../assets/logo_coveresy.e46b04b06dee.7a8794.svg" alt="Coveresy"></a>
+  <nav>
+    <a href="index.html" data-nav="dashboard">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>
+      <span>Dashboard</span></a>
+    <a href="quote.html" data-nav="quote">
+      <svg viewBox="0 0 24 24"><path d="M4 6.5A2.5 2.5 0 0 1 6.5 4H16l4 4v11.5a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 19.5z"/><path d="M8 12h8M8 16h5"/></svg>
+      <span>New quote</span></a>
+    <a href="users.html" data-nav="users">
+      <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20c0-3.2 2.5-5.5 5.5-5.5s5.5 2.3 5.5 5.5"/><path d="M16.5 11.5a3 3 0 1 0-1.2-5.7M17 20c0-2.2-.8-3.9-2-5"/></svg>
+      <span>My agents</span></a>
+  </nav>
+  <div class="who">
+    <div class="nm" data-user-name>…</div>
+    <div class="cd" data-user-code>—</div>
+    <button id="logout" type="button">Sign out</button>
   </div>
-  <div class="hdr-user">
-    <span class="avatar" data-user-initials>··</span>
-    <span data-user-name>…</span>
-    <button class="linkbtn" id="logout" style="margin-left:10px">Sign out</button>
-  </div>
-</div>
+</aside>

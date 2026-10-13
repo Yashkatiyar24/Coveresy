@@ -25,7 +25,8 @@ async function requirePartner(active) {
   const me = await api('/partner/me');
   document.querySelectorAll('[data-user-name]').forEach((el) => { el.textContent = me.name; });
   document.querySelectorAll('[data-user-initials]').forEach((el) => { el.textContent = initials(me.name); });
-  document.querySelectorAll('nav a').forEach((a) => {
+  document.querySelectorAll('[data-user-code]').forEach((el) => { el.textContent = me.agent_code; });
+  document.querySelectorAll('.rail nav a').forEach((a) => {
     a.classList.toggle('on', a.dataset.nav === active);
   });
   const out = document.getElementById('logout');

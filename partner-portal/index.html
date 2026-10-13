@@ -2,59 +2,62 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Policy Dashboard - Coveresy Partner</title>
+<title>Dashboard - Coveresy Partner</title>
 <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
 <link href="../assets/css.1d997c.css" rel="stylesheet">
 <link href="portal.css" rel="stylesheet">
 </head>
 <body>
-<div id="hdr"></div>
-<div class="wrap">
-  <h1>Policy Dashboard</h1>
-
-  <div class="tabs" id="products">
-    <button data-product="car" class="on">Car</button>
-    <button data-product="bike">Bike</button>
-    <button data-product="health">Health</button>
-    <button data-product="life">Life</button>
-  </div>
-
-  <div class="panel">
-    <div style="flex:0 0 260px">
-      <label class="field"><span>From date</span><input type="date" id="from"></label>
-      <label class="field"><span>To date</span><input type="date" id="to"></label>
-      <button class="btn" id="getdata">Get data</button>
+<div class="shell">
+  <div id="rail"></div>
+  <main class="main">
+    <div class="page-head">
+      <h1>Your business</h1>
+      <p>Quote requests you and your agents have raised, and what they have converted to.</p>
     </div>
-    <div class="kpis">
-      <div class="kpi a"><b id="k-count">0</b><span>No of policies</span></div>
-      <div class="kpi b"><b id="k-net">₹0</b><span>Net premium</span></div>
-      <div class="kpi c"><b id="k-total">₹0</b><span>Total premium</span></div>
-    </div>
-  </div>
 
-  <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-bottom:10px">
-    <div class="tabs" id="stages" style="border:none;margin:0">
-      <button data-stage="" class="on">All</button>
-      <button data-stage="quote_created">Recent Quotes Created</button>
-      <button data-stage="proposal_created">Proposal Created</button>
-      <button data-stage="payment_pending">Payment Pending</button>
-      <button data-stage="pending_inspection">Pending Inspections</button>
-      <button data-stage="payment_done">Payment Done</button>
+    <div class="seg" id="products">
+      <button data-product="car" class="on">Car</button>
+      <button data-product="bike">Bike</button>
+      <button data-product="health">Health</button>
+      <button data-product="life">Life</button>
     </div>
-    <div class="search">
-      <input type="text" id="q" placeholder="Search for a name, registration number, phone no.">
-      <button id="searchbtn" aria-label="Search">⌕</button>
-    </div>
-  </div>
 
-  <div class="card" style="padding:0;overflow:hidden">
-    <table>
-      <thead><tr><th>Customer</th><th>Product</th><th>Details</th><th>Stage</th><th>Premium</th><th>Created</th></tr></thead>
-      <tbody id="rows"></tbody>
-    </table>
-    <div class="empty hide" id="empty"><b>Sorry!</b>No results found for this status.</div>
-  </div>
-  <p class="msg err hide" id="err"></p>
+    <div class="card toolbar">
+      <label class="field" style="max-width:190px"><span>From</span><input type="date" id="from"></label>
+      <label class="field" style="max-width:190px"><span>To</span><input type="date" id="to"></label>
+      <button class="btn btn-dark" id="getdata" style="margin-bottom:0">Apply</button>
+      <div class="searchbox" style="margin-left:auto">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input type="text" id="q" placeholder="Search name, phone or registration">
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><span>Issued policies</span><b class="mono" id="k-count">0</b></div>
+      <div class="stat y"><span>Net premium</span><b class="mono" id="k-net">₹0</b></div>
+      <div class="stat g"><span>Total premium</span><b class="mono" id="k-total">₹0</b></div>
+      <div class="stat"><span>Open requests</span><b class="mono" id="k-open">0</b></div>
+    </div>
+
+    <div class="chips" id="stages" style="margin-bottom:16px">
+      <button data-stage="" class="on">Everything</button>
+      <button data-stage="quote_created">Quote raised</button>
+      <button data-stage="proposal_created">Proposal made</button>
+      <button data-stage="payment_pending">Awaiting payment</button>
+      <button data-stage="pending_inspection">Inspection due</button>
+      <button data-stage="payment_done">Issued</button>
+    </div>
+
+    <div class="card" style="overflow:hidden">
+      <table>
+        <thead><tr><th>Customer</th><th>Cover</th><th>Stage</th><th>Premium</th><th>Raised</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+      <div class="empty hide" id="empty"><b>Nothing here yet</b>Raise a quote and it shows up on this list.</div>
+    </div>
+    <p class="msg err hide" id="err"></p>
+  </main>
 </div>
 
 <script src="app.js"></script>
@@ -62,15 +65,14 @@
 let product = 'car', stage = '', all = [];
 
 const SUMMARY = {
-  car: (d) => [d.registration, d.cover].filter(Boolean).join(' · '),
-  bike: (d) => [d.registration, d.cover].filter(Boolean).join(' · '),
+  car: (d) => [d.registration, d.cover && d.cover.replace(/_/g, ' ')].filter(Boolean).join(' · '),
+  bike: (d) => [d.registration, d.cover && d.cover.replace(/_/g, ' ')].filter(Boolean).join(' · '),
   health: (d) => [d.members && d.members + ' member(s)', d.sum_insured && '₹' + Number(d.sum_insured).toLocaleString('en-IN')].filter(Boolean).join(' · '),
   life: (d) => [d.plan, d.sum_assured && '₹' + Number(d.sum_assured).toLocaleString('en-IN'), d.term_years && d.term_years + ' yrs'].filter(Boolean).join(' · '),
 };
 const STAGE_LABEL = {
-  quote_created: 'Quote created', proposal_created: 'Proposal created',
-  payment_pending: 'Payment pending', pending_inspection: 'Pending inspection',
-  payment_done: 'Payment done',
+  quote_created: 'Quote raised', proposal_created: 'Proposal made',
+  payment_pending: 'Awaiting payment', pending_inspection: 'Inspection due', payment_done: 'Issued',
 };
 
 function render() {
@@ -86,20 +88,36 @@ function render() {
     let d = {};
     try { d = JSON.parse(r.details || '{}'); } catch (e) {}
     const tr = document.createElement('tr');
-    const cells = [
-      r.customer_name || '—',
-      r.product.charAt(0).toUpperCase() + r.product.slice(1),
-      (SUMMARY[r.product] || (() => ''))(d) || '—',
-      STAGE_LABEL[r.stage] || r.stage,
-      r.total_premium ? money(r.total_premium) : '—',
-      (r.created_at || '').slice(0, 10),
-    ];
-    cells.forEach((text, i) => {
-      const td = document.createElement('td');
-      if (i === 3) { const s = document.createElement('span'); s.className = 'pill'; s.textContent = text; td.appendChild(s); }
-      else td.textContent = text;
-      tr.appendChild(td);
-    });
+
+    const who = document.createElement('td');
+    who.innerHTML = '<div></div><div class="sub"></div>';
+    who.children[0].textContent = r.customer_name || 'Not named yet';
+    who.children[1].textContent = r.customer_phone || '';
+    tr.appendChild(who);
+
+    const cover = document.createElement('td');
+    cover.innerHTML = '<div></div><div class="sub"></div>';
+    cover.children[0].textContent = r.product.charAt(0).toUpperCase() + r.product.slice(1);
+    cover.children[1].textContent = (SUMMARY[r.product] || (() => ''))(d) || '—';
+    tr.appendChild(cover);
+
+    const st = document.createElement('td');
+    const tag = document.createElement('span');
+    tag.className = 'tag' + (r.stage === 'payment_done' ? ' done' : '');
+    tag.textContent = STAGE_LABEL[r.stage] || r.stage;
+    st.appendChild(tag);
+    tr.appendChild(st);
+
+    const prem = document.createElement('td');
+    prem.className = 'mono';
+    prem.textContent = r.total_premium ? money(r.total_premium) : '—';
+    tr.appendChild(prem);
+
+    const when = document.createElement('td');
+    when.className = 'sub mono';
+    when.textContent = (r.created_at || '').slice(0, 10);
+    tr.appendChild(when);
+
     tbody.appendChild(tr);
   });
   document.getElementById('empty').classList.toggle('hide', rows.length > 0);
@@ -117,11 +135,12 @@ async function load() {
     document.getElementById('k-count').textContent = t.policies || 0;
     document.getElementById('k-net').textContent = money(t.net_premium);
     document.getElementById('k-total').textContent = money(t.total_premium);
+    document.getElementById('k-open').textContent = all.filter((r) => r.stage !== 'payment_done').length;
     render();
   } catch (e) { err.textContent = e.message; err.classList.remove('hide'); }
 }
 
-function wireTabs(id, onPick) {
+function wire(id, onPick) {
   document.getElementById(id).addEventListener('click', (e) => {
     const b = e.target.closest('button'); if (!b) return;
     document.querySelectorAll('#' + id + ' button').forEach((x) => x.classList.toggle('on', x === b));
@@ -130,12 +149,12 @@ function wireTabs(id, onPick) {
 }
 
 (async () => {
-  document.getElementById('hdr').innerHTML = await (await fetch('_header.html')).text();
+  document.getElementById('rail').outerHTML = await (await fetch('_header.html')).text();
   await requirePartner('dashboard');
   document.getElementById('from').value = monthStart();
   document.getElementById('to').value = today();
-  wireTabs('products', (d) => { product = d.product; load(); });
-  wireTabs('stages', (d) => { stage = d.stage || ''; render(); });
+  wire('products', (d) => { product = d.product; load(); });
+  wire('stages', (d) => { stage = d.stage || ''; render(); });
   document.getElementById('getdata').addEventListener('click', load);
   document.getElementById('q').addEventListener('input', render);
   await load();
