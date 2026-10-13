@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Manage Users - Coveresy Partner</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link href="../assets/css.1d997c.css" rel="stylesheet">
+<link href="portal.css" rel="stylesheet">
+<style>
+  .head{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:6px}
+  dialog{border:none;border-radius:10px;padding:0;max-width:430px;width:92%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+  dialog::backdrop{background:rgba(20,24,40,.5)}
+  dialog .inner{padding:26px 28px}
+  dialog h2{font:700 20px/1.2 'Lato',sans-serif;margin:0 0 18px}
+</style>
+</head>
+<body>
+<div id="hdr"></div>
+<div class="wrap">
+  <div class="head">
+    <h1 style="margin:0">Manage Users</h1>
+    <button class="btn" id="add">+ Add new user</button>
+  </div>
+  <p style="color:var(--muted);margin:0 0 20px">Agents you have added. They sign in with their own credentials and their quotes roll up to you.</p>
+
+  <div class="tabs" id="tabs">
+    <button data-status="approved" class="on">Approved</button>
+    <button data-status="pending">Pending</button>
+    <button data-status="rejected">Rejected</button>
+  </div>
+
+  <div class="card" style="padding:0;overflow:hidden">
+    <table>
+      <thead><tr><th>Agent code</th><th>User info</th><th>Agent type</th><th>Status</th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="empty hide" id="empty"><b>No users yet</b>Add your first agent to get started.</div>
+  </div>
+  <p class="msg err hide" id="err"></p>
+</div>
+
+<dialog id="dlg"><form class="inner" id="form" novalidate>
+  <h2>Add new user</h2>
+  <label class="field"><span>Full name</span><input type="text" name="name" required></label>
+  <label class="field"><span>Email</span><input type="email" name="email" required></label>
+  <label class="field"><span>Mobile</span><input type="tel" name="mobile" maxlength="10" inputmode="numeric" required></label>
+  <label class="field"><span>Temporary password</span><input type="password" name="password" minlength="8" required></label>
+  <p class="msg err hide" id="derr"></p>
+  <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:18px">
+    <button type="button" class="btn btn-ghost" id="cancel">Cancel</button>
+    <button type="submit" class="btn">Create</button>
+  </div>
+</form></dialog>
+
+<script src="app.js"></script>
+<script>
+let status = 'approved', agents = [];
+const err = document.getElementById('err'), dlg = document.getElementById('dlg');
+
+function render() {
+  const rows = agents.filter((a) => a.status === status);
+  const tbody = document.getElementById('rows');
+  tbody.innerHTML = '';
+  rows.forEach((a) => {
+    const tr = document.createElement('tr');
+    [a.agent_code, `${a.name} · ${a.email} · ${a.mobile}`, a.agent_type, a.status].forEach((t, i) => {
+      const td = document.createElement('td');
+      if (i === 2) { const s = document.createElement('span'); s.className = 'pill'; s.textContent = t; td.appendChild(s); }
+      else td.textContent = t;
+      tr.appendChild(td);
+    });
+    tbody.appendChild(tr);
+  });
+  document.getElementById('empty').classList.toggle('hide', rows.length > 0);
+  document.querySelectorAll('#tabs button').forEach((b) => {
+    const n = agents.filter((a) => a.status === b.dataset.status).length;
+    b.textContent = b.dataset.status.charAt(0).toUpperCase() + b.dataset.status.slice(1) + ` (${n})`;
+  });
+}
+
+async function load() {
+  err.classList.add('hide');
+  try { agents = (await api('/partner/agents')).accounts || []; render(); }
+  catch (e) { err.textContent = e.message; err.classList.remove('hide'); }
+}
+
+(async () => {
+  document.getElementById('hdr').innerHTML = await (await fetch('_header.html')).text();
+  await requirePartner('users');
+  document.getElementById('tabs').addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    document.querySelectorAll('#tabs button').forEach((x) => x.classList.toggle('on', x === b));
+    status = b.dataset.status; render();
+  });
+  document.getElementById('add').addEventListener('click', () => dlg.showModal());
+  document.getElementById('cancel').addEventListener('click', () => dlg.close());
+  const form = document.getElementById('form'), derr = document.getElementById('derr');
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    derr.classList.add('hide');
+    if (!/^[6-9][0-9]{9}$/.test(form.mobile.value.trim())) {
+      derr.textContent = 'Please enter a valid 10-digit mobile number.'; derr.classList.remove('hide'); return;
+    }
+    try {
+      await api('/partner/agents', { method: 'POST', body: JSON.stringify({
+        name: form.name.value.trim(), email: form.email.value.trim(),
+        mobile: form.mobile.value.trim(), password: form.password.value }) });
+      dlg.close(); form.reset(); await load();
+    } catch (e2) { derr.textContent = e2.message; derr.classList.remove('hide'); }
+  });
+  await load();
+})();
+</script>
+</body>
+</html>

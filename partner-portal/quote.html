@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Get Quotes - Coveresy Partner</title>
+<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+<link href="../assets/css.1d997c.css" rel="stylesheet">
+<link href="portal.css" rel="stylesheet">
+<style>
+  .quote-head{text-align:center;margin:10px 0 26px}
+  .quote-head h1{font:300 34px/1.2 'Lato',sans-serif;margin:0}
+  #products{justify-content:center;border:none}
+  #products button{letter-spacing:2px;text-transform:uppercase;font-size:16px}
+  .journey{max-width:860px;margin:0 auto}
+  .journey .card{padding:26px 28px}
+  .actions{text-align:center;margin-top:24px}
+  .tnc{text-align:center;color:var(--muted);font-size:13px;margin-top:14px}
+</style>
+</head>
+<body>
+<div id="hdr"></div>
+<div class="wrap">
+  <div class="quote-head"><h1>Get Quotes instantly and sell quickly</h1></div>
+
+  <div class="tabs" id="products">
+    <button data-product="car" class="on">Car</button>
+    <button data-product="bike">Bike</button>
+    <button data-product="health">Health</button>
+    <button data-product="life">Life</button>
+  </div>
+
+  <form class="journey" id="form" novalidate>
+    <div class="card">
+      <div class="radios" id="motor-mode">
+        <label><input type="radio" name="mode" value="renew" checked><span>Renew</span></label>
+        <label><input type="radio" name="mode" value="new"><span>New</span></label>
+      </div>
+
+      <!-- motor: car + bike -->
+      <div data-for="car bike">
+        <div class="row">
+          <label class="field"><span>Registration number</span>
+            <input type="text" name="registration" placeholder="MH02BX0377 or 21BH1234A" style="text-transform:uppercase"></label>
+          <label class="field"><span>Previous policy expiry</span><input type="date" name="expiry"></label>
+        </div>
+        <div class="radios" style="margin-top:4px">
+          <label><input type="radio" name="cover" value="comprehensive" checked><span>Comprehensive</span></label>
+          <label><input type="radio" name="cover" value="third_party"><span>Third party</span></label>
+          <label><input type="radio" name="cover" value="own_damage"><span>Own damage</span></label>
+          <label><input type="radio" name="cover" value="limited_tp"><span>Limited TP</span></label>
+        </div>
+      </div>
+
+      <!-- health -->
+      <div data-for="health" class="hide">
+        <div class="row">
+          <label class="field"><span>Members to cover</span>
+            <select name="members"><option>1</option><option>2</option><option>3</option><option>4</option><option>5+</option></select></label>
+          <label class="field"><span>Eldest member age</span><input type="number" name="eldest_age" min="0" max="110" placeholder="42"></label>
+          <label class="field"><span>Sum insured (₹)</span>
+            <select name="sum_insured">
+              <option value="500000">5 lakh</option><option value="1000000">10 lakh</option>
+              <option value="2500000">25 lakh</option><option value="5000000">50 lakh</option>
+            </select></label>
+        </div>
+        <div class="radios">
+          <label><input type="checkbox" name="pre_existing"><span>Any pre-existing illness</span></label>
+        </div>
+      </div>
+
+      <!-- life -->
+      <div data-for="life" class="hide">
+        <div class="row">
+          <label class="field"><span>Plan type</span>
+            <select name="plan"><option value="term">Term</option><option value="endowment">Endowment</option>
+              <option value="ulip">ULIP</option><option value="money_back">Money back</option></select></label>
+          <label class="field"><span>Sum assured (₹)</span>
+            <select name="sum_assured">
+              <option value="2500000">25 lakh</option><option value="5000000">50 lakh</option>
+              <option value="10000000">1 crore</option><option value="20000000">2 crore</option>
+            </select></label>
+          <label class="field"><span>Policy term (years)</span><input type="number" name="term_years" min="5" max="50" value="30"></label>
+        </div>
+        <div class="row">
+          <label class="field"><span>Date of birth</span><input type="date" name="dob"></label>
+          <label class="field"><span>Annual income (₹)</span><input type="number" name="income" min="0" step="10000" placeholder="1200000"></label>
+        </div>
+        <div class="radios">
+          <label><input type="checkbox" name="smoker"><span>Uses tobacco</span></label>
+        </div>
+      </div>
+
+      <hr style="border:none;border-top:1px solid var(--line);margin:20px 0">
+      <div class="row">
+        <label class="field"><span>Customer name</span><input type="text" name="customer_name" placeholder="Full name"></label>
+        <label class="field"><span>Customer mobile</span>
+          <input type="tel" name="customer_phone" maxlength="10" inputmode="numeric" placeholder="10-digit mobile"></label>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn" type="submit" style="min-width:220px;height:50px">Request quotes</button>
+      <p class="msg err hide" id="err"></p>
+      <p class="msg ok hide" id="ok"></p>
+      <p class="tnc">Our team prepares quotes from our authorised insurance partners and comes back to you.
+        By continuing you agree to the <a href="/terms/">T&amp;C</a>.</p>
+    </div>
+  </form>
+</div>
+
+<script src="app.js"></script>
+<script>
+let product = new URLSearchParams(location.search).get('product') || 'car';
+if (!['car', 'bike', 'health', 'life'].includes(product)) product = 'car';
+const form = document.getElementById('form');
+const err = document.getElementById('err'), ok = document.getElementById('ok');
+
+function showFields() {
+  document.querySelectorAll('[data-for]').forEach((el) => {
+    el.classList.toggle('hide', !el.dataset.for.split(' ').includes(product));
+  });
+  document.getElementById('motor-mode').classList.toggle('hide', !['car', 'bike'].includes(product));
+}
+
+function details() {
+  const f = new FormData(form);
+  if (product === 'car' || product === 'bike') {
+    return { registration: (f.get('registration') || '').toUpperCase(), cover: f.get('cover'),
+             renewal: f.get('mode') === 'renew', expiry: f.get('expiry') || null };
+  }
+  if (product === 'health') {
+    return { members: f.get('members'), eldest_age: Number(f.get('eldest_age')) || null,
+             sum_insured: Number(f.get('sum_insured')), pre_existing: f.get('pre_existing') === 'on' };
+  }
+  return { plan: f.get('plan'), sum_assured: Number(f.get('sum_assured')),
+           term_years: Number(f.get('term_years')) || null, dob: f.get('dob') || null,
+           income: Number(f.get('income')) || null, smoker: f.get('smoker') === 'on' };
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  err.classList.add('hide'); ok.classList.add('hide');
+  const phone = form.customer_phone.value.trim();
+  if (phone && !/^[6-9][0-9]{9}$/.test(phone)) {
+    err.textContent = 'Please enter a valid 10-digit mobile number.'; err.classList.remove('hide'); return;
+  }
+  const d = details();
+  if ((product === 'car' || product === 'bike') && !d.registration) {
+    err.textContent = 'Please enter the registration number.'; err.classList.remove('hide'); return;
+  }
+  const btn = form.querySelector('button[type=submit]');
+  btn.disabled = true; btn.textContent = 'Saving…';
+  try {
+    await api('/partner/quotes', { method: 'POST', body: JSON.stringify({
+      product, customer_name: form.customer_name.value.trim() || null,
+      customer_phone: phone || null, details: d }) });
+    ok.textContent = 'Quote request saved. It is now on your dashboard.';
+    ok.classList.remove('hide');
+    form.reset(); showFields();
+  } catch (e2) { err.textContent = e2.message; err.classList.remove('hide'); }
+  btn.disabled = false; btn.textContent = 'Request quotes';
+});
+
+(async () => {
+  document.getElementById('hdr').innerHTML = await (await fetch('_header.html')).text();
+  await requirePartner('quote');
+  document.getElementById('products').addEventListener('click', (e) => {
+    const b = e.target.closest('button'); if (!b) return;
+    document.querySelectorAll('#products button').forEach((x) => x.classList.toggle('on', x === b));
+    product = b.dataset.product; showFields(); ok.classList.add('hide'); err.classList.add('hide');
+    history.replaceState(null, '', '?product=' + product);
+  });
+  document.querySelectorAll('#products button').forEach((b) => b.classList.toggle('on', b.dataset.product === product));
+  showFields();
+})();
+</script>
+</body>
+</html>

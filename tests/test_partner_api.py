@@ -6,6 +6,7 @@ import json
 import os
 import sys
 import threading
+import time
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 
@@ -87,8 +88,43 @@ def test_unconfigured_sink_is_not_silent():
         assert c.post("/api/partners/apply", json=GOOD | {"pan": "ZZZZZ1111Z"}).status_code == 503
 
 
+
+
+# --- partner portal sessions -------------------------------------------------
+
+def test_session_round_trip_and_tampering():
+    index.SESSION_SECRET = "unit-test-secret"
+    token = index.sign_session({"id": "pac_1", "name": "A", "exp": time.time() + 60})
+    assert index.read_session(token)["id"] == "pac_1"
+
+    # a flipped payload byte must not verify
+    raw, _, sig = token.partition(".")
+    forged = ("x" + raw[1:]) + "." + sig
+    assert index.read_session(forged) is None
+    assert index.read_session(None) is None
+    assert index.read_session("garbage") is None
+
+    expired = index.sign_session({"id": "pac_1", "exp": time.time() - 1})
+    assert index.read_session(expired) is None
+
+    # a token signed with a different secret must not verify
+    index.SESSION_SECRET = "another-secret"
+    assert index.read_session(token) is None
+
+
+def test_portal_endpoints_require_a_session():
+    index.SESSION_SECRET = "unit-test-secret"
+    with TestClient(index.app) as c:
+        for method, path in (("get", "/api/partner/me"), ("get", "/api/partner/quotes"),
+                             ("get", "/api/partner/agents")):
+            assert getattr(c, method)(path).status_code == 401, path
+        assert c.post("/api/partner/quotes", json={"product": "life"}).status_code == 401
+
+
 if __name__ == "__main__":
     test_apply_forwards_to_sink()
     test_health_reports_sink_state()
     test_unconfigured_sink_is_not_silent()
+    test_session_round_trip_and_tampering()
+    test_portal_endpoints_require_a_session()
     print("ok")
