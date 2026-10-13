@@ -45,9 +45,11 @@ migrations_dir = "migrations"
 binding = "DOCS"
 bucket_name = "coveresy-docs"
 
-# Live on workers.dev with production security settings, no custom domain.
+# Reached through the Vercel rewrite at https://www.coveresy.com/ops, so it
+# serves under that same prefix: the links it emits must match the URL the
+# browser is on, or they would resolve against the marketing site.
 [env.staging]
-vars = { COVERESY_ENV = "production" }
+vars = { COVERESY_ENV = "production", BASE_PATH = "/ops" }
 
 [[env.staging.d1_databases]]
 binding = "DB"

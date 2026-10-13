@@ -1,0 +1,13 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "rewrites": [
+    {
+      "source": "/ops",
+      "destination": "https://coveresy-ops-staging.coveresy.workers.dev/ops"
+    },
+    {
+      "source": "/ops/:path*",
+      "destination": "https://coveresy-ops-staging.coveresy.workers.dev/ops/:path*"
+    }
+  ]
+}
