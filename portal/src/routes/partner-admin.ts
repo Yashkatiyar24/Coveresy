@@ -53,10 +53,15 @@ get('/partners', async (ctx: Ctx) => {
   );
   const principals = results.filter((r) => !r.parent_id).length;
   const neverUsed = results.filter((r) => !r.last_login_at).length;
+  const waiting = await ctx.env.DB.prepare(
+    "SELECT COUNT(*) AS n FROM partner_applications WHERE status IN ('new','contacted')",
+  ).first<{ n: number }>();
 
   return page({ title: 'Partners', user: ctx.user, ctx, active: '/partners', wide: true }, html`
     <h1>Partners</h1>
     ${flashFromUrl(ctx.url)}
+    <p class="filters"><a class="btn ${waiting?.n ? '' : 'ghost'}" href="/partners/applications">
+      Applications waiting · ${waiting?.n ?? 0}</a></p>
     <div class="cards">
       <div class="card stat"><b>${results.length}</b><span>Partner logins</span></div>
       <div class="card stat"><b>${neverUsed}</b><span>Never signed in</span></div>
